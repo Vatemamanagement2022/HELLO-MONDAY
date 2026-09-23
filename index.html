@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello Monday</title>
+  <meta name="description" content="Hello Monday — gestión y servicios para que cada lunes empiece con buen pie.">
+  <meta name="theme-color" content="#1f1b3a">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a href="#top" class="logo" aria-label="Hello Monday, inicio">
+        <span class="logo-mark" aria-hidden="true">HM</span>
+        <span class="logo-text">Hello Monday</span>
+      </a>
+
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="nav" id="nav-menu" aria-label="Principal">
+        <ul>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#nosotros">Nosotros</a></li>
+          <li><a href="#proceso">Cómo trabajamos</a></li>
+          <li><a href="#faq">Preguntas</a></li>
+          <li><a href="#contacto" class="btn btn-small">Contacto</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">Hola, lunes 👋</p>
+          <h1>Nos ocupamos de la gestión para que tú te ocupes de crecer.</h1>
+          <p class="lead">
+            En Hello Monday acompañamos a empresas y profesionales en su día a día:
+            organización, administración y soluciones a medida para que cada semana empiece con buen pie.
+          </p>
+          <div class="hero-actions">
+            <a href="#contacto" class="btn">Hablemos</a>
+            <a href="#servicios" class="btn btn-ghost">Ver servicios</a>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="card-float card-a">
+            <span class="dot"></span>
+            <div>
+              <strong>Lunes</strong>
+              <small>Todo en orden ✔</small>
+            </div>
+          </div>
+          <div class="card-float card-b">
+            <strong>+ tiempo</strong>
+            <small>para lo importante</small>
+          </div>
+          <div class="blob"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICIOS -->
+    <section class="section" id="servicios">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">Servicios</p>
+          <h2>Todo lo que necesitas, en un solo lugar</h2>
+          <p>Elige lo que necesitas hoy y amplía cuando quieras.</p>
+        </header>
+
+        <div class="grid grid-3">
+          <article class="service">
+            <div class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z M8 9h8 M8 13h8 M8 17h5"/></svg>
+            </div>
+            <h3>Administración y facturación</h3>
+            <p>Emisión de facturas, control de cobros y pagos, y una visión clara de tus números.</p>
+          </article>
+          <article class="service">
+            <div class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+            </div>
+            <h3>Gestión y operaciones</h3>
+            <p>Procesos ordenados, proveedores coordinados y tareas repetitivas bajo control.</p>
+          </article>
+          <article class="service">
+            <div class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+            </div>
+            <h3>Asesoramiento</h3>
+            <p>Te ayudamos a tomar decisiones con información y un plan concreto.</p>
+          </article>
+          <article class="service">
+            <div class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>
+            </div>
+            <h3>Digitalización</h3>
+            <p>Herramientas sencillas para trabajar en la nube y dejar atrás el papel.</p>
+          </article>
+          <article class="service">
+            <div class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3v18 M3 12h18"/></svg>
+            </div>
+            <h3>Proyectos a medida</h3>
+            <p>¿Tienes una necesidad concreta? La analizamos juntos y diseñamos la solución.</p>
+          </article>
+          <article class="service">
+            <div class="service-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h3>Soporte cercano</h3>
+            <p>Una persona de referencia que conoce tu negocio y responde cuando lo necesitas.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOSOTROS -->
+    <section class="section section-alt" id="nosotros">
+      <div class="container split">
+        <div>
+          <p class="eyebrow">Nosotros</p>
+          <h2>Un equipo que convierte los lunes en buenos días</h2>
+          <p>
+            Creemos que la buena gestión no se nota: simplemente funciona. Por eso trabajamos con
+            cercanía, transparencia y método, para que tengas tranquilidad y tiempo para lo que de verdad importa.
+          </p>
+          <ul class="checklist">
+            <li>Trato directo y personalizado</li>
+            <li>Procesos claros y documentados</li>
+            <li>Confidencialidad en cada gestión</li>
+          </ul>
+        </div>
+        <div class="values">
+          <div class="value">
+            <strong>Cercanía</strong>
+            <span>Hablamos tu idioma, sin tecnicismos.</span>
+          </div>
+          <div class="value">
+            <strong>Orden</strong>
+            <span>Todo en su sitio y a tiempo.</span>
+          </div>
+          <div class="value">
+            <strong>Confianza</strong>
+            <span>Relaciones a largo plazo.</span>
+          </div>
+          <div class="value">
+            <strong>Energía</strong>
+            <span>Actitud de lunes por la mañana, toda la semana.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESO -->
+    <section class="section" id="proceso">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">Cómo trabajamos</p>
+          <h2>Empezar es fácil</h2>
+        </header>
+        <ol class="steps">
+          <li>
+            <span class="step-num">1</span>
+            <h3>Nos cuentas</h3>
+            <p>Una primera conversación para entender tu situación y tus objetivos.</p>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <h3>Proponemos</h3>
+            <p>Te enviamos una propuesta clara, con alcance y precio cerrados.</p>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <h3>Ponemos en marcha</h3>
+            <p>Organizamos todo y te mantenemos informado en cada paso.</p>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <h3>Acompañamos</h3>
+            <p>Revisamos resultados y ajustamos para seguir mejorando.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section section-alt" id="faq">
+      <div class="container narrow">
+        <header class="section-head">
+          <p class="eyebrow">Preguntas frecuentes</p>
+          <h2>¿Tienes dudas?</h2>
+        </header>
+        <div class="faq">
+          <details>
+            <summary>¿Con qué tipo de clientes trabajáis?</summary>
+            <p>Con autónomos, pequeñas y medianas empresas que quieren delegar la gestión y ganar tiempo.</p>
+          </details>
+          <details>
+            <summary>¿Cuánto cuesta?</summary>
+            <p>Depende de lo que necesites. Tras una primera conversación te enviamos una propuesta a medida sin compromiso.</p>
+          </details>
+          <details>
+            <summary>¿Trabajáis en remoto?</summary>
+            <p>Sí. Podemos trabajar en remoto o combinarlo con reuniones presenciales según prefieras.</p>
+          </details>
+          <details>
+            <summary>¿Cuánto se tarda en empezar?</summary>
+            <p>Normalmente podemos arrancar en pocos días desde que aceptas la propuesta.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section class="section contact" id="contacto">
+      <div class="container split">
+        <div>
+          <p class="eyebrow">Contacto</p>
+          <h2>¿Empezamos el lunes?</h2>
+          <p>Escríbenos y te respondemos lo antes posible.</p>
+          <ul class="contact-list">
+            <li>
+              <span>Email</span>
+              <a href="mailto:facturacion@helloomonday.com">facturacion@helloomonday.com</a>
+            </li>
+            <li>
+              <span>Horario</span>
+              Lunes a viernes, 9:00 – 18:00
+            </li>
+          </ul>
+        </div>
+
+        <form class="form" id="contact-form" novalidate>
+          <div class="field">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" name="nombre" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="field">
+            <label for="mensaje">Mensaje</label>
+            <textarea id="mensaje" name="mensaje" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-block">Enviar mensaje</button>
+          <p class="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <a href="#top" class="logo">
+        <span class="logo-mark" aria-hidden="true">HM</span>
+        <span class="logo-text">Hello Monday</span>
+      </a>
+      <p>© <span id="year"></span> Hello Monday. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
