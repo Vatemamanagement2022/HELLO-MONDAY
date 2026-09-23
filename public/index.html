@@ -1,0 +1,2312 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Hello Monday OC · Herramienta interna</title>
+<link rel="icon" href="logo.png">
+<style>body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
+</head>
+<body>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    color-scheme: light;
+    --paper:#EEF0E8;
+    --surface:#FFFFFF;
+    --surface-2:#F7F8F2;
+    --ink:#151B2B;
+    --ink-soft:#4B5468;
+    --ink-mute:#7B8271;
+    --border:#DBDECF;
+    --border-strong:#C4C8B6;
+    --accent:#B77F26;
+    --accent-ink:#3E2A08;
+    --accent-soft:#F1E3C6;
+    --focus:#2A78D6;
+    --danger:#B54B3C;
+    --danger-bg:#F6E1DB;
+
+    --dept-influencers:#c85326;
+    --dept-rrss:#15966b;
+    --dept-repr:#2a78d6;
+    --dept-pr:#c98500;
+
+    --st-pendiente:#c98500;
+    --st-pendiente-bg:#FBEDD2;
+    --st-aceptado:#3E63A0;
+    --st-aceptado-bg:#E4EBF6;
+    --st-facturado:#1D8A3C;
+    --st-facturado-bg:#DFF1E2;
+
+    --oc-revision-bg:#F1F1EA;
+    --oc-revision-ink:#4B5468;
+    --oc-cerrada-bg:#151B2B;
+    --oc-cerrada-ink:#F7F8F2;
+
+    --angel-bg:#EDE3F6;
+    --angel-ink:#5B3E86;
+
+    --shadow: 0 1px 2px rgba(21,27,43,0.06), 0 8px 24px -12px rgba(21,27,43,0.18);
+    --radius: 14px;
+    --radius-sm: 9px;
+
+    --font-display:'Manrope', system-ui, sans-serif;
+    --font-body:'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono:'IBM Plex Mono', ui-monospace, monospace;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --paper:#12161F;
+      --surface:#191F2C;
+      --surface-2:#212838;
+      --ink:#EEEFE7;
+      --ink-soft:#B6BBC9;
+      --ink-mute:#8890A0;
+      --border:#2E3547;
+      --border-strong:#3C4459;
+      --accent:#E0AC52;
+      --accent-ink:#2A1B04;
+      --accent-soft:#3A2E17;
+      --focus:#5B9AE8;
+      --danger:#E08772;
+      --danger-bg:#3B241E;
+
+      --dept-influencers:#e0703b;
+      --dept-rrss:#2bb98a;
+      --dept-repr:#5b9ae8;
+      --dept-pr:#e0ac52;
+
+      --st-pendiente:#e0ac52;
+      --st-pendiente-bg:#3A2E17;
+      --st-aceptado:#8FB0E0;
+      --st-aceptado-bg:#22314A;
+      --st-facturado:#5FCB7E;
+      --st-facturado-bg:#183A24;
+
+      --oc-revision-bg:#212838;
+      --oc-revision-ink:#B6BBC9;
+      --oc-cerrada-bg:#EEEFE7;
+      --oc-cerrada-ink:#151B2B;
+
+      --angel-bg:#332347;
+      --angel-ink:#CBA9EE;
+
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 28px -14px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#12161F; --surface:#191F2C; --surface-2:#212838; --ink:#EEEFE7; --ink-soft:#B6BBC9; --ink-mute:#8890A0;
+    --border:#2E3547; --border-strong:#3C4459; --accent:#E0AC52; --accent-ink:#2A1B04; --accent-soft:#3A2E17; --focus:#5B9AE8;
+    --danger:#E08772; --danger-bg:#3B241E;
+    --dept-influencers:#e0703b; --dept-rrss:#2bb98a; --dept-repr:#5b9ae8; --dept-pr:#e0ac52;
+    --st-pendiente:#e0ac52; --st-pendiente-bg:#3A2E17; --st-aceptado:#8FB0E0; --st-aceptado-bg:#22314A; --st-facturado:#5FCB7E; --st-facturado-bg:#183A24;
+    --oc-revision-bg:#212838; --oc-revision-ink:#B6BBC9; --oc-cerrada-bg:#EEEFE7; --oc-cerrada-ink:#151B2B;
+    --angel-bg:#332347; --angel-ink:#CBA9EE;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 28px -14px rgba(0,0,0,0.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--font-body); font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  ::selection{background:var(--accent-soft); color:var(--accent-ink);}
+  h1,h2,h3,h4{font-family:var(--font-display); margin:0; text-wrap:balance; letter-spacing:-0.01em;}
+  a{color:var(--focus);}
+  button{font-family:inherit;}
+  input, select, textarea{font-family:inherit; font-size:14px; color:var(--ink);}
+  :focus-visible{outline:2px solid var(--focus); outline-offset:2px;}
+  .num{font-variant-numeric:tabular-nums; font-family:var(--font-mono);}
+  .logo-mark{ height:26px; width:auto; display:block; }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .logo-mark{ filter:invert(1); } }
+  :root[data-theme="dark"] .logo-mark{ filter:invert(1); }
+
+  .app{ max-width:1180px; margin:0 auto; padding:20px 20px 64px; }
+
+  .topbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; padding:18px 4px 20px; }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand .sub{ font-size:11.5px; color:var(--ink-mute); text-transform:uppercase; letter-spacing:.08em; font-weight:600; border-left:1px solid var(--border-strong); padding-left:12px; }
+  .topbar-right{ display:flex; align-items:center; gap:10px; }
+  .identity-pill{ display:flex; align-items:center; gap:8px; background:var(--surface-2); border:1px solid var(--border); border-radius:999px; padding:5px 6px 5px 12px; font-size:12.5px; }
+  .identity-pill b{ font-weight:700; }
+  .identity-pill .mode-tag{ background:var(--accent-soft); color:var(--accent-ink); font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:2px 8px; border-radius:999px; }
+  .identity-pill button{ border:none; background:var(--surface); border-radius:999px; padding:5px 11px; font-size:11.5px; font-weight:600; color:var(--ink-soft); cursor:pointer; }
+  .identity-pill button:hover{ background:var(--border); color:var(--ink); }
+
+  nav.tabs{ display:flex; gap:4px; background:var(--surface-2); border:1px solid var(--border); border-radius:999px; padding:4px; }
+  nav.tabs button{ border:none; background:transparent; padding:9px 16px; border-radius:999px; font-weight:600; font-size:13.5px; color:var(--ink-soft); cursor:pointer; transition:background .15s ease, color .15s ease; white-space:nowrap; }
+  nav.tabs button[aria-selected="true"]{ background:var(--ink); color:var(--paper); }
+  nav.tabs button:hover:not([aria-selected="true"]){ background:var(--surface); color:var(--ink); }
+
+  .panel{ display:flex; flex-direction:column; gap:18px; }
+  .panel[hidden]{ display:none; }
+  .lede{ display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; padding:4px 2px 2px; }
+  .lede h1{ font-size:22px; }
+  .lede p{ margin:6px 0 0; color:var(--ink-soft); font-size:13.5px; max-width:62ch; }
+
+  .card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
+
+  form.oc-form{ display:flex; flex-direction:column; gap:14px; }
+  fieldset.section{ border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px 20px; background:var(--surface); margin:0; box-shadow:var(--shadow); }
+  fieldset.section legend{ display:flex; align-items:center; gap:9px; padding:0 6px; font-family:var(--font-display); font-weight:700; font-size:14px; color:var(--ink); text-transform:uppercase; letter-spacing:.03em; }
+  fieldset.section legend .n{ display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:6px; background:var(--accent-soft); color:var(--accent-ink); font-size:11.5px; font-weight:800; font-family:var(--font-mono); }
+  .angel-tag{ background:var(--angel-bg); color:var(--angel-ink); font-size:10px; text-transform:uppercase; letter-spacing:.05em; font-weight:800; padding:2px 8px; border-radius:999px; margin-left:auto; }
+  fieldset.section.angel-only{ border-color:var(--angel-ink); }
+  .grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px 16px; margin-top:12px; }
+  .grid.cols-2{ grid-template-columns:repeat(2, 1fr); }
+  .grid.cols-4{ grid-template-columns:repeat(4, 1fr); }
+  .grid.cols-5{ grid-template-columns:repeat(5, 1fr); }
+  @media (max-width:760px){ .grid, .grid.cols-2, .grid.cols-4, .grid.cols-5{ grid-template-columns:1fr; } }
+
+  .field{ display:flex; flex-direction:column; gap:5px; min-width:0; }
+  .field.span-2{ grid-column:span 2; } .field.span-3{ grid-column:span 3; }
+  @media (max-width:760px){ .field.span-2, .field.span-3{ grid-column:span 1; } }
+  .field label{ font-size:12px; font-weight:600; color:var(--ink-soft); }
+  .hint{ font-size:11.5px; color:var(--ink-mute); margin:0; }
+  .field input[type=text], .field input[type=number], .field input[type=date], .field input[type=month],
+  .field input[type=url], .field select, .field textarea{ border:1px solid var(--border-strong); background:var(--surface-2); color:var(--ink); border-radius:var(--radius-sm); padding:9px 10px; width:100%; }
+  .field textarea{ min-height:64px; resize:vertical; }
+  .field input[readonly], .field input:disabled, .field select:disabled{ opacity:.75; }
+  .field.computed input{ background:var(--accent-soft); border-color:var(--accent-soft); color:var(--accent-ink); font-weight:600; font-family:var(--font-mono); }
+
+  .subgrid{ border:1px dashed var(--border-strong); border-radius:var(--radius-sm); padding:14px; margin-top:10px; display:none; }
+  .subgrid.open{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px 16px; }
+  @media (max-width:760px){ .subgrid.open{ grid-template-columns:1fr; } }
+
+  .form-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:4px 2px; flex-wrap:wrap; }
+  .form-status{ font-size:12.5px; color:var(--ink-mute); }
+
+  button.btn{ border:1px solid transparent; border-radius:999px; padding:10px 18px; font-weight:700; font-size:13.5px; cursor:pointer; transition:filter .15s ease, background .15s ease; font-family:var(--font-body); }
+  button.btn.primary{ background:var(--ink); color:var(--paper); }
+  button.btn.primary:hover{ filter:brightness(1.2); }
+  button.btn.accent{ background:var(--accent); color:var(--accent-ink); }
+  button.btn.accent:hover{ filter:brightness(1.08); }
+  button.btn.ghost{ background:transparent; border-color:var(--border-strong); color:var(--ink); }
+  button.btn.ghost:hover{ background:var(--surface-2); }
+  button.btn.danger{ background:transparent; border-color:var(--danger); color:var(--danger); }
+  button.btn.danger:hover{ background:var(--danger-bg); }
+  button.btn.sm{ padding:7px 13px; font-size:12.5px; }
+  button.btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+  .banner{ display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border-radius:var(--radius-sm); background:var(--st-pendiente-bg); border:1px solid var(--st-pendiente); color:var(--ink); font-size:13px; }
+  .banner.info{ background:var(--st-aceptado-bg); border-color:var(--st-aceptado); }
+  .banner.ok{ background:var(--st-facturado-bg); border-color:var(--st-facturado); }
+  .banner strong{ font-weight:700; }
+
+  .toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .toolbar select, .toolbar input[type=search]{ border:1px solid var(--border-strong); background:var(--surface); color:var(--ink); border-radius:999px; padding:8px 14px; font-size:13px; }
+  .toolbar input[type=search]{ min-width:200px; }
+  .legend-inline{ display:flex; gap:14px; flex-wrap:wrap; margin-left:auto; font-size:12px; color:var(--ink-mute); }
+  .legend-inline .dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; }
+
+  .dept-group{ display:flex; flex-direction:column; gap:0; }
+  .dept-head{ display:flex; align-items:center; gap:10px; padding:14px 18px; border-radius:var(--radius) var(--radius) 0 0; background:var(--surface); border:1px solid var(--border); border-bottom:none; flex-wrap:wrap; }
+  .dept-chip{ width:10px; height:10px; border-radius:3px; flex:none; }
+  .dept-head h3{ font-size:14.5px; }
+  .dept-head .count{ font-size:12px; color:var(--ink-mute); }
+  .dept-totals{ margin-left:auto; display:flex; gap:18px; font-size:12.5px; color:var(--ink-soft); }
+  .dept-totals b{ color:var(--ink); font-family:var(--font-mono); font-weight:600; }
+
+  .table-wrap{ overflow-x:auto; border:1px solid var(--border); border-top:none; background:var(--surface); }
+  table.matrix{ width:100%; border-collapse:collapse; min-width:960px; }
+  table.matrix th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; color:var(--ink-mute); padding:9px 12px; border-bottom:1px solid var(--border); background:var(--surface-2); white-space:nowrap; }
+  table.matrix td{ padding:10px 12px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle; }
+  table.matrix tr.row{ cursor:pointer; }
+  table.matrix tr.row:hover td{ background:var(--surface-2); }
+  table.matrix tr.example td{ opacity:.62; }
+  table.matrix td.num, table.matrix th.num{ text-align:right; font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+  table.matrix tr.subtotal td{ background:var(--surface-2); font-weight:700; border-top:1px solid var(--border-strong); }
+  table.matrix tr.grand td{ background:var(--ink); color:var(--paper); font-weight:800; border:none; font-family:var(--font-display); }
+  table.matrix tr.grand td.num{ font-family:var(--font-mono); }
+  .oc-code{ font-family:var(--font-mono); font-size:12px; color:var(--ink-soft); }
+  .example-tag{ display:inline-block; font-size:9.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:2px 6px; border-radius:5px; border:1px dashed var(--border-strong); color:var(--ink-mute); margin-left:6px; }
+
+  .pill{ display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:700; white-space:nowrap; }
+  .pill .dot{ width:6px; height:6px; border-radius:50%; }
+  .pill.oc-revision{ background:var(--oc-revision-bg); color:var(--oc-revision-ink); border:1px dashed var(--border-strong); }
+  .pill.oc-cerrada{ background:var(--oc-cerrada-bg); color:var(--oc-cerrada-ink); }
+  .pill.oc-cancelada{ background:var(--danger-bg); color:var(--danger); border:1px dashed var(--danger); }
+  tr.row-cancelada td{ color:var(--ink-mute); }
+  tr.row-cancelada .oc-code{ text-decoration:line-through; text-decoration-color:var(--danger); }
+  tr.row-pending{ opacity:.6; cursor:default; }
+  table.matrix tr.row-pending:hover td{ background:transparent; }
+  select.mx-fact-inline{ border:1px solid var(--border-strong); background:var(--surface-2); color:var(--ink); border-radius:999px; padding:4px 9px; font-size:11px; font-weight:700; cursor:pointer; }
+  .pill.sino-si{ background:var(--st-facturado-bg); color:var(--st-facturado); }
+  .pill.sino-no{ background:var(--surface-2); color:var(--ink-mute); border:1px solid var(--border-strong); }
+
+  .empty-state{ display:flex; flex-direction:column; align-items:flex-start; gap:10px; padding:34px 26px; border:1px dashed var(--border-strong); border-radius:var(--radius); background:var(--surface); }
+  .empty-state h3{ font-size:16px; }
+  .empty-state p{ margin:0; color:var(--ink-soft); font-size:13.5px; max-width:52ch; }
+
+  .stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  @media (max-width:760px){ .stat-row{ grid-template-columns:repeat(2,1fr); } }
+  .stat-tile{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:6px; }
+  .stat-tile .label{ font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-mute); font-weight:700; }
+  .stat-tile .value{ font-family:var(--font-mono); font-size:23px; font-weight:600; font-variant-numeric:tabular-nums; }
+
+  .chart-grid{ display:grid; grid-template-columns:1.1fr 1fr; gap:16px; align-items:stretch; }
+  @media (max-width:900px){ .chart-grid{ grid-template-columns:1fr; } }
+  .chart-card{ padding:18px 20px 16px; display:flex; flex-direction:column; gap:10px; }
+  .chart-card[hidden]{ display:none; }
+  .chart-card h3{ font-size:14px; }
+  .chart-card .sub{ font-size:12px; color:var(--ink-mute); margin-top:-6px; }
+
+  /* objetivos & cumplimiento */
+  .obj-card{ padding:18px 20px 20px; display:flex; flex-direction:column; gap:14px; }
+  .obj-card h3{ font-size:14px; }
+  .obj-card .sub{ font-size:12px; color:var(--ink-mute); }
+  .obj-weights-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px 14px; margin-top:12px; }
+  @media (max-width:700px){ .obj-weights-grid{ grid-template-columns:repeat(2,1fr); } }
+  .obj-weights-sum{ font-size:12px; font-weight:700; color:var(--st-facturado); }
+  .obj-weights-sum.bad{ color:var(--danger); }
+  .obj-dept-list{ display:flex; flex-direction:column; gap:12px; }
+  .obj-dept-card{ border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; display:flex; flex-direction:column; gap:10px; background:var(--surface-2); }
+  .obj-dept-head{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .obj-dept-head h4{ font-size:13.5px; font-family:var(--font-display); }
+  .obj-dept-head .peso{ font-size:11px; color:var(--ink-mute); font-weight:700; margin-left:auto; }
+  .obj-metrics{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px 18px; }
+  @media (max-width:560px){ .obj-metrics{ grid-template-columns:1fr; } }
+  .obj-metric .lab{ font-size:11px; color:var(--ink-mute); text-transform:uppercase; letter-spacing:.05em; font-weight:700; }
+  .obj-metric .figures{ display:flex; align-items:baseline; gap:6px; font-family:var(--font-mono); font-size:12.5px; color:var(--ink-soft); flex-wrap:wrap; }
+  .obj-metric .figures b{ font-size:15.5px; color:var(--ink); font-weight:600; }
+  .obj-bar-track{ height:7px; border-radius:999px; background:var(--border); overflow:hidden; margin-top:5px; }
+  .obj-bar-fill{ height:100%; border-radius:999px; }
+  .obj-dept-card details.collapsible{ box-shadow:none; border-color:var(--border); }
+  .obj-dept-card details.collapsible summary{ padding:6px 0; font-size:12px; font-weight:600; }
+  .obj-dept-card details.collapsible .details-body{ padding:0 0 4px; }
+  svg.chart{ width:100%; height:auto; overflow:visible; }
+  .bar-label{ font-family:var(--font-mono); font-size:11px; fill:var(--ink); font-variant-numeric:tabular-nums; }
+  .axis-label{ font-family:var(--font-body); font-size:10.5px; fill:var(--ink-mute); }
+  .grid-line{ stroke:var(--border); stroke-width:1; }
+  .baseline{ stroke:var(--border-strong); stroke-width:1.2; }
+
+  .status-bar-wrap{ display:flex; flex-direction:column; gap:10px; }
+  .status-track{ display:flex; height:26px; border-radius:8px; overflow:hidden; border:1px solid var(--border); }
+  .status-seg{ display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--ink); min-width:2px; }
+  .status-legend{ display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--ink-soft); }
+  .status-legend .dot{ width:8px; height:8px; border-radius:50%; margin-right:6px; display:inline-block; }
+
+  .tooltip{ position:fixed; pointer-events:none; background:var(--ink); color:var(--paper); font-size:11.5px; padding:6px 9px; border-radius:7px; z-index:60; font-family:var(--font-mono); box-shadow:var(--shadow); transform:translate(-50%,-120%); white-space:nowrap; }
+
+  /* cost item rows */
+  .cost-cat{ margin-top:14px; }
+  .cost-cat h4{ font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .cost-rows{ display:flex; flex-direction:column; gap:8px; }
+  .cost-row{ display:grid; grid-template-columns:1fr 140px auto; gap:8px; align-items:center; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px 10px; }
+  @media (max-width:640px){ .cost-row{ grid-template-columns:1fr; } }
+  .cost-row input{ border:1px solid var(--border-strong); background:var(--surface); border-radius:7px; padding:7px 9px; font-size:13px; color:var(--ink); }
+  .cost-row .rm{ border:none; background:transparent; color:var(--danger); font-size:12px; font-weight:700; cursor:pointer; padding:4px 8px; }
+  .cost-row .rm:hover{ text-decoration:underline; }
+  .add-cost-row{ border:1px dashed var(--border-strong); background:transparent; color:var(--ink-soft); border-radius:var(--radius-sm); padding:8px 12px; font-size:12.5px; font-weight:600; cursor:pointer; align-self:flex-start; }
+  .add-cost-row:hover{ background:var(--surface-2); color:var(--ink); }
+
+  .final-row{ display:grid; grid-template-columns:1fr 90px 110px auto; gap:8px; align-items:center; padding:8px 10px; border-bottom:1px solid var(--border); font-size:13px; }
+  @media (max-width:700px){ .final-row{ grid-template-columns:1fr; } }
+  .final-row .amt{ font-family:var(--font-mono); text-align:right; }
+  .final-row select{ border:1px solid var(--border-strong); background:var(--surface-2); border-radius:7px; padding:5px 8px; font-size:12px; }
+  .final-row input.mod-amt{ width:100%; border:1px solid var(--border-strong); background:var(--surface-2); border-radius:7px; padding:5px 8px; font-size:12px; font-family:var(--font-mono); }
+
+  details.collapsible{ border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); box-shadow:var(--shadow); }
+  details.collapsible summary{ cursor:pointer; padding:14px 18px; font-family:var(--font-display); font-weight:700; font-size:14px; list-style:none; display:flex; align-items:center; gap:8px; }
+  details.collapsible summary::-webkit-details-marker{ display:none; }
+  details.collapsible summary::before{ content:'▸'; font-size:11px; color:var(--ink-mute); transition:transform .15s ease; }
+  details.collapsible[open] summary::before{ transform:rotate(90deg); }
+  details.collapsible .details-body{ padding:0 20px 20px; display:flex; flex-direction:column; gap:14px; }
+
+  #clone-details summary{ font-size:13px; padding:12px 16px; }
+  #clone-search{ border:1px solid var(--border-strong); background:var(--surface-2); color:var(--ink); border-radius:var(--radius-sm); padding:9px 10px; }
+  .clone-result{ display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface-2); padding:8px 12px; flex-wrap:wrap; }
+  .clone-result-info{ display:flex; flex-direction:column; gap:2px; }
+  .clone-result-info strong{ font-size:13px; }
+
+  /* Gate overlay */
+  .gate-backdrop{ position:fixed; inset:0; background:var(--paper); z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; overflow-y:auto; }
+  .gate-card{ max-width:560px; width:100%; background:var(--surface); border:1px solid var(--border); border-radius:20px; box-shadow:var(--shadow); padding:34px 32px; display:flex; flex-direction:column; gap:20px; }
+  .gate-logo{ height:34px; width:auto; align-self:center; }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .gate-logo{ filter:invert(1); } }
+  :root[data-theme="dark"] .gate-logo{ filter:invert(1); }
+  .gate-greeting{ text-align:center; font-size:15.5px; color:var(--ink); }
+  .gate-greeting strong{ font-family:var(--font-display); }
+  .gate-question{ font-size:13px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em; text-align:center; }
+  .name-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  @media (max-width:460px){ .name-grid{ grid-template-columns:repeat(2,1fr); } }
+  .name-chip{ border:1px solid var(--border-strong); background:var(--surface-2); color:var(--ink); border-radius:12px; padding:12px 8px; font-size:13px; font-weight:600; cursor:pointer; transition:all .12s ease; }
+  .name-chip:hover{ border-color:var(--accent); }
+  .name-chip.selected{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .gate-hint{ text-align:center; font-size:11.5px; color:var(--ink-mute); }
+  .gate-linkrow{ text-align:center; }
+  .gate-linkrow button{ border:none; background:none; color:var(--focus); font-size:12.5px; font-weight:600; cursor:pointer; }
+  .gate-linkrow button:hover{ text-decoration:underline; }
+  hr.gate-sep{ border:none; border-top:1px solid var(--border); margin:2px 0; }
+  .gate-field{ display:flex; flex-direction:column; gap:6px; }
+  .gate-field label{ font-size:12px; font-weight:600; color:var(--ink-soft); }
+  .gate-field input{ border:1px solid var(--border-strong); background:var(--surface-2); color:var(--ink); border-radius:var(--radius-sm); padding:11px 12px; font-size:15px; text-align:center; letter-spacing:.1em; font-family:var(--font-mono); }
+  .gate-error{ text-align:center; font-size:12.5px; color:var(--danger); font-weight:600; }
+  .mode-grid{ display:flex; flex-direction:column; gap:10px; }
+  .mode-card{ display:flex; align-items:flex-start; gap:12px; border:1px solid var(--border-strong); background:var(--surface-2); border-radius:var(--radius); padding:14px 16px; text-align:left; cursor:pointer; transition:all .12s ease; }
+  .mode-card:hover:not(:disabled){ border-color:var(--accent); }
+  .mode-card.selected{ border-color:var(--ink); background:var(--accent-soft); }
+  .mode-card:disabled{ opacity:.45; cursor:not-allowed; }
+  .mode-card .mi{ font-size:20px; line-height:1; }
+  .mode-card .mtext{ display:flex; flex-direction:column; gap:3px; }
+  .mode-card .mt{ font-weight:700; font-size:13.5px; font-family:var(--font-display); }
+  .mode-card .md{ font-size:12px; color:var(--ink-soft); }
+  .gate-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .gate-back{ background:none; border:none; color:var(--ink-mute); font-size:12.5px; cursor:pointer; font-weight:600; }
+  .gate-back:hover{ color:var(--ink); }
+
+  .footer-note{ text-align:center; font-size:11.5px; color:var(--ink-mute); padding-top:10px; }
+</style>
+
+<div class="gate-backdrop" id="gate-root"></div>
+
+<div class="app" id="app-root" style="display:none;">
+  <header class="topbar">
+    <div class="brand">
+      <img class="logo-mark" src="logo.png" alt="Hello Monday">
+      <span class="sub">Órdenes de compra &amp; rentabilidad</span>
+    </div>
+    <div class="topbar-right">
+      <div class="identity-pill" id="identity-pill"></div>
+      <nav class="tabs" role="tablist" aria-label="Secciones">
+        <button type="button" role="tab" id="tab-btn-nueva" data-tab="nueva" aria-selected="true">Nueva OC</button>
+        <button type="button" role="tab" id="tab-btn-matriz" data-tab="matriz" aria-selected="false">Matriz</button>
+        <button type="button" role="tab" id="tab-btn-dashboard" data-tab="dashboard" aria-selected="false">Dashboard</button>
+      </nav>
+    </div>
+  </header>
+
+  <div id="db-banner"></div>
+
+  <!-- NUEVA / EDICIÓN OC -->
+  <section class="panel" id="panel-nueva" data-panel="nueva">
+    <div class="lede">
+      <div>
+        <h1 id="form-title">Registrar una nueva OC</h1>
+        <p id="form-subtitle">Cuando una propuesta se va a facturar con firmeza, rellena esta OC. En cuanto la guardes aparecerá automáticamente en la Matriz, en la sección de su departamento y mes de campaña.</p>
+      </div>
+    </div>
+    <div id="form-mount"></div>
+  </section>
+
+  <!-- MATRIZ -->
+  <section class="panel" id="panel-matriz" data-panel="matriz" hidden>
+    <div class="lede">
+      <div>
+        <h1><span id="matriz-title-word">Matriz</span> <span id="matriz-year-label"></span></h1>
+        <p id="matriz-subtitle">Cada OC guardada aparece aquí, agrupada por departamento y ordenada por fecha de campaña.</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <select id="mx-dept"></select>
+      <select id="mx-year"></select>
+      <select id="mx-month"></select>
+      <select id="mx-estado">
+        <option value="all">Todos los estados de OC</option>
+        <option value="revision">En revisión</option>
+        <option value="cancelada">Canceladas</option>
+        <option value="cerrada">Cerradas</option>
+      </select>
+      <input type="search" id="mx-search" placeholder="Buscar cliente o proyecto…">
+      <div class="legend-inline">
+        <span><span class="dot" style="background:var(--st-pendiente)"></span>Pendiente</span>
+        <span><span class="dot" style="background:var(--st-aceptado)"></span>Aceptado</span>
+        <span><span class="dot" style="background:var(--st-facturado)"></span>Facturado</span>
+      </div>
+    </div>
+    <div id="matriz-body"></div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="panel" id="panel-dashboard" data-panel="dashboard" hidden>
+    <div class="lede">
+      <div>
+        <h1><span id="dash-title-word">Dashboard</span> <span id="dash-year-label"></span></h1>
+        <p id="dash-subtitle">Resultado del año seleccionado por departamento, evolución mensual y estado de facturación.</p>
+      </div>
+      <select id="dash-year"></select>
+    </div>
+    <div class="stat-row" id="dash-stats"></div>
+    <div class="chart-grid">
+      <div class="card chart-card" id="card-chart-dept">
+        <h3>Facturación por departamento</h3>
+        <span class="sub">Importe vendido, año seleccionado</span>
+        <div id="chart-dept"></div>
+      </div>
+      <div class="card chart-card">
+        <h3>Evolución mensual</h3>
+        <span class="sub">Facturación por mes de campaña</span>
+        <div id="chart-month"></div>
+      </div>
+    </div>
+    <div class="card chart-card">
+      <h3>Estado de facturación</h3>
+      <span class="sub">Nº de OC en cada estado, año seleccionado</span>
+      <div id="chart-status" class="status-bar-wrap"></div>
+    </div>
+    <div id="dash-objetivos"></div>
+  </section>
+
+  <p class="footer-note">Los datos se guardan en tiempo real y solo los ven las cuentas autorizadas del equipo.</p>
+</div>
+
+<datalist id="dl-costes-info"></datalist>
+<div id="modal-root"></div>
+<div id="tooltip-root"></div>
+
+<script>
+window.APP_DATA = { logo: "logo.png" };
+</script>
+<script>
+(function () {
+  "use strict";
+
+  /* ================= constants ================= */
+  var TEAM_NAMES = ['Belén', 'Leire', 'Rocío', 'Paloma', 'Ana', 'Lucía P', 'Lucía Valentina', 'Celia', 'Gema', 'Ángel'];
+  var ADMIN_NAME = 'Ángel';
+
+  var DEPARTMENTS = [
+    { key: 'influencers', label: 'Departamento Influencers', short: 'Influencers', color: 'var(--dept-influencers)', responsable: 'Belén' },
+    { key: 'rrss', label: 'Departamento Redes Sociales', short: 'Redes Sociales', color: 'var(--dept-rrss)', responsable: 'Leire' },
+    { key: 'repr', label: 'Departamento Representación & Nuevo Negocio', short: 'Representación & Nuevo Negocio', color: 'var(--dept-repr)', responsable: 'Rocío' },
+    { key: 'pr', label: 'Departamento PR & Eventos', short: 'PR & Eventos', color: 'var(--dept-pr)', responsable: 'Paloma' }
+  ];
+  /** Departamento "propietario" de cada persona del equipo, usado para filtrar su Dashboard. */
+  var TEAM_DEPT = {
+    'Belén': 'influencers', 'Lucía P': 'influencers', 'Lucía Valentina': 'influencers', 'Ana': 'influencers',
+    'Leire': 'rrss', 'Celia': 'rrss',
+    'Rocío': 'repr', 'Gema': 'repr',
+    'Paloma': 'pr'
+  };
+  function deptOfIdentity(name) { return TEAM_DEPT[name] || null; }
+  var EJECUTIVO_OPTS = ['Ana', 'Lucía P', 'Lucía Valentina', 'Gema', 'Celia'];
+  var DISENO_OPTS = ['Leire', 'Celia'];
+  var COST_CATS = [
+    { key: 'feeTalento', label: 'Fee Talento' },
+    { key: 'premioEnvios', label: 'Premio / Envíos' },
+    { key: 'dietasTransportes', label: 'Dietas / Transportes' },
+    { key: 'otros', label: 'Otros' }
+  ];
+  var BILLING = {
+    pendiente: { label: 'Pendiente confirmar cifras', color: 'var(--st-pendiente)' },
+    aceptado: { label: 'Aceptado', color: 'var(--st-aceptado)' },
+    facturado: { label: 'Facturado', color: 'var(--st-facturado)' }
+  };
+  var MODES = {
+    nueva: { label: 'Nueva OC', icon: '📝', desc: 'Registrar una OC nueva desde cero.' },
+    edicion: { label: 'Edición OC', icon: '✏️', desc: 'Buscar una de tus OC y editar sus datos.' },
+    cierre: { label: 'Cierre OC', icon: '🔒', desc: 'Solo Ángel: introducir los datos finales y cerrar una OC.' },
+    cancelar: { label: 'Cancelar OC', icon: '🚫', desc: 'Anular una OC en revisión — deja de contar en la Matriz.' },
+    consulta: { label: 'Consulta', icon: '👀', desc: 'Solo lectura: Matriz, Dashboard y detalle de OC.' },
+    ocwork: { label: 'OC', icon: '📝', desc: 'Nueva, edición o cierre de una orden de compra.' },
+    matriz: { label: 'Matriz', icon: '📊', desc: 'Todas las OC, agrupadas por departamento y mes.' },
+    dashboard: { label: 'Dashboard', icon: '📈', desc: 'Gráficas y resultado del año por departamento.' },
+    objetivos: { label: 'Objetivos', icon: '🎯', desc: 'Objetivo anual y grado de cumplimiento por departamento.' }
+  };
+  var CFG = window.HM_CONFIG || {};
+  function lc(s) { return String(s || '').trim().toLowerCase(); }
+  function lcKeys(obj) { var out = {}; Object.keys(obj || {}).forEach(function (k) { out[lc(k)] = obj[k]; }); return out; }
+  var ADMIN_EMAILS = (CFG.adminEmails || []).map(lc);
+  var VIEWER_EMAILS = lcKeys(CFG.viewerEmails);
+  var TEAM_EMAILS = lcKeys(CFG.teamEmails);
+  var ALLOWED_DOMAIN = lc(CFG.allowedDomain);
+
+  function deptByKey(k) { for (var i = 0; i < DEPARTMENTS.length; i++) { if (DEPARTMENTS[i].key === k) return DEPARTMENTS[i]; } return DEPARTMENTS[0]; }
+  function fmtEUR(n) { n = Number(n) || 0; return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n); }
+  function fmtPct(n) { if (!isFinite(n)) n = 0; return n.toFixed(1).replace('.', ',') + '%'; }
+  function todayISO() { return new Date().toISOString().slice(0, 10); }
+  function currentMonthStr() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+  function yearOfMonth(m) { if (!m) return new Date().getFullYear(); return Number(String(m).slice(0, 4)); }
+  function monthIdxOfMonth(m) { if (!m) return new Date().getMonth(); return Number(String(m).slice(5, 7)) - 1; }
+  function fmtMonth(m) { if (!m) return '—'; var idx = monthIdxOfMonth(m); return MESES_LARGO[idx] + ' ' + yearOfMonth(m); }
+  var MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  var MESES_LARGO = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  function rentPct(ingresos, costes) { ingresos = Number(ingresos) || 0; costes = Number(costes) || 0; if (ingresos <= 0) return 0; return ((ingresos - costes) / ingresos) * 100; }
+  function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function uid() { return Math.random().toString(36).slice(2, 10); }
+
+  function generateOcInterno(presupuesto) {
+    var p = (presupuesto || '').trim();
+    if (!p) return '';
+    if (/^OC-/i.test(p)) return p;
+    return 'OC-' + p;
+  }
+
+  /* ================= state ================= */
+  var state = {
+    identity: null,
+    mode: null,
+    authUser: null,
+    authError: '',
+    isViewer: false,
+    gateStep: 'name',
+    gatePickedName: null,
+    gatePinName: '',
+    ocs: [],
+    ocsLoaded: false,
+    dbSubError: null,
+    ocsLoadTimedOut: false,
+    objetivos: {},
+    objSaveMsg: '',
+    usingDb: false,
+    db: null,
+    activeTab: 'nueva',
+    matrizDept: 'all',
+    matrizYear: new Date().getFullYear(),
+    matrizMonth: 'all',
+    matrizEstado: 'all',
+    matrizQuery: '',
+    dashYear: new Date().getFullYear(),
+    editingId: null,
+    formOc: null,
+    autoExpandCierre: false,
+    matrizBanner: '',
+    autoOpenObjetivos: false,
+    cloneNotice: '',
+    formIsClone: false,
+    saveNotice: ''
+  };
+
+  function getOcs() { return state.ocs; }
+  function isAdminIdentity() { return state.identity === ADMIN_NAME && !state.isViewer; }
+  /** 'admin' = Ángel (full access) · 'viewer' = solo lectura (viewerEmails) (Matriz/Dashboard/detalle) · 'regular' = resto del equipo (solo sus propias OC, sin Matriz/Dashboard). */
+  function getRole() { if (state.isViewer) return 'viewer'; if (isAdminIdentity()) return 'admin'; return 'regular'; }
+
+  function newEmptyOc() {
+    return {
+      tieneFiscales: 'NO',
+      nombreSocial: '', cif: '', direccion: '', contactoComercial: '', contactoFacturacion: '',
+      proyecto: '', clienteComercial: '', presupuesto: '', ocInterno: '',
+      fechaLead: currentMonthStr(), fechaCampana: currentMonthStr(),
+      departamento: DEPARTMENTS[0].key,
+      ejecutivo: '', asistente1: '', asistente2: '', diseno: '',
+      comentarios: '',
+      ingresosPrevisto: 0, costesPrevisto: 0,
+      condicionesPago: '', poCliente: '', acuerdoLink: '', detallesFacturacion: '', fechaUltimaPublicacion: '',
+      costes: [],
+      contenido: '',
+      ndaMarca: 'NO', ndaTalentos: 'NO', usoMarca: 'NO', riesgos: 'NO',
+      estadoOC: 'revision', estadoFacturacion: 'pendiente',
+      datosFinales: null,
+      createdBy: state.identity, createdAt: new Date().toISOString()
+    };
+  }
+
+  /** Clientes recurrentes: candidatos para "continuar desde una OC ya creada" — una por
+   *  cliente+proyecto (la más reciente), filtrado por lo que puede ver el rol actual. */
+  function cloneCandidates(query) {
+    var role = getRole();
+    var pool = getOcs().filter(function (o) { return o.estadoOC !== 'cancelada'; });
+    if (role === 'regular') {
+      var dept = deptOfIdentity(state.identity);
+      pool = pool.filter(function (o) { return o.departamento === dept; });
+    }
+    var byKey = {};
+    pool.forEach(function (o) {
+      var key = (o.clienteComercial || '').toLowerCase() + '|' + (o.proyecto || '').toLowerCase();
+      if (!byKey[key] || (o.createdAt || '') > (byKey[key].createdAt || '')) byKey[key] = o;
+    });
+    var list = Object.keys(byKey).map(function (k) { return byKey[k]; });
+    if (query) {
+      var q = query.toLowerCase();
+      list = list.filter(function (o) {
+        return (o.clienteComercial || '').toLowerCase().indexOf(q) > -1 ||
+          (o.proyecto || '').toLowerCase().indexOf(q) > -1 ||
+          (o.presupuesto || '').toLowerCase().indexOf(q) > -1;
+      });
+    }
+    return list.sort(function (a, b) { return (b.createdAt || '').localeCompare(a.createdAt || ''); }).slice(0, 8);
+  }
+  /** Copia todos los datos de una OC existente excepto los económicos, los costes y las horas —
+   *  para clientes recurrentes (misma OC/presupuesto, facturación mensual con costes distintos).
+   *  Solo quedan editables: fecha campaña, ingresos/costes previstos, apoyos/diseño, comentarios,
+   *  costes y contenido — el resto (datos cliente, proyecto/presupuesto, fecha lead, responsable,
+   *  ejecutivo, venta y facturación, checklist legal) se bloquea en el formulario vía state.formIsClone. */
+  function cloneOcAsTemplate(source) {
+    var cloned = JSON.parse(JSON.stringify(source));
+    delete cloned.id;
+    cloned.ingresosPrevisto = 0;
+    cloned.costesPrevisto = 0;
+    cloned.costes = [];
+    cloned.estadoOC = 'revision';
+    cloned.estadoFacturacion = 'pendiente';
+    cloned.datosFinales = null;
+    cloned.motivoCancelacion = '';
+    cloned.canceladaPor = '';
+    cloned.canceladaAt = '';
+    // fechaLead y fechaUltimaPublicacion se mantienen igual que en la OC origen (no se tocan).
+    cloned.fechaCampana = currentMonthStr();
+    cloned.createdBy = state.identity;
+    cloned.createdAt = new Date().toISOString();
+    return cloned;
+  }
+  /** Pinta los resultados de búsqueda de OC recurrentes dentro del formulario "Nueva OC". */
+  function renderCloneResults(query) {
+    var box = document.getElementById('clone-results');
+    if (!box) return;
+    var list = cloneCandidates(query);
+    if (!list.length) {
+      box.innerHTML = '<p class="hint" style="margin:0;">' + (query ? 'Sin resultados para esa búsqueda.' : 'Empieza a escribir para buscar una OC recurrente (cliente, proyecto o presupuesto).') + '</p>';
+      return;
+    }
+    box.innerHTML = list.map(function (o) {
+      var d = deptByKey(o.departamento);
+      return '<div class="clone-result">' +
+        '<div class="clone-result-info">' +
+          '<strong>' + escapeHtml(o.clienteComercial || o.proyecto || '(sin nombre)') + '</strong>' +
+          '<span class="hint" style="margin:0;">' + escapeHtml(o.proyecto || '') + ' · ' + escapeHtml(o.presupuesto || o.ocInterno || '') + ' · ' + escapeHtml(d.short) + '</span>' +
+        '</div>' +
+        '<button type="button" class="btn ghost sm clone-use-btn" data-id="' + o.id + '">Usar como base</button>' +
+      '</div>';
+    }).join('');
+    box.querySelectorAll('.clone-use-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        var source = list.find(function (o) { return o.id === id; });
+        if (!source) return;
+        state.formOc = cloneOcAsTemplate(source);
+        state.editingId = null;
+        state.formIsClone = true;
+        state.saveNotice = '';
+        state.cloneNotice = 'Datos copiados de "' + (source.clienteComercial || source.proyecto || 'la OC seleccionada') + '" (' + (source.presupuesto || source.ocInterno || '') + '). Los datos de cliente, proyecto, fecha lead, responsable/ejecutivo, venta y facturación y el checklist legal quedan bloqueados por ser los mismos cada mes. Actualiza el mes de campaña, ingresos, costes, apoyos/diseño y comentarios de este mes.';
+        renderForm();
+      });
+    });
+  }
+
+  function computeRow(oc) {
+    var closed = oc.estadoOC === 'cerrada' && oc.datosFinales;
+    var facturacion = closed ? (Number(oc.datosFinales.ingresosFinal) || 0) : (Number(oc.ingresosPrevisto) || 0);
+    var costes = closed ? (Number(oc.datosFinales.costesFinal) || 0) : (Number(oc.costesPrevisto) || 0);
+    var beneficio = facturacion - costes;
+    var rent = rentPct(facturacion, costes);
+    var refMonth = oc.fechaCampana || oc.fechaLead;
+    return { facturacion: facturacion, beneficio: beneficio, rentabilidad: rent, refMonth: refMonth };
+  }
+
+  function sumCostItemsPrevisto(items) {
+    return (items || []).filter(function (i) { return i.origen !== 'cierre'; }).reduce(function (a, i) { return a + (Number(i.coste) || 0); }, 0);
+  }
+  function sumCostItemsFinal(items) {
+    return (items || []).filter(function (i) { return i.estadoRevision !== 'eliminado'; }).reduce(function (a, i) {
+      var v = (i.estadoRevision === 'modificado' || i.origen === 'cierre') ? (Number(i.costeFinal) || 0) : (Number(i.coste) || 0);
+      return a + v;
+    }, 0);
+  }
+
+  /* ================= capabilities ================= */
+  /** Conecta con Firestore. Se llama solo cuando hay una sesión de Google válida: las reglas
+   *  de Firestore (firestore.rules) rechazan cualquier lectura/escritura sin ella. */
+  function initCapabilities() {
+    if (state.usingDb) return;
+    try {
+      state.db = firebase.firestore();
+      state.usingDb = true;
+      renderDbBanner(true);
+      subscribeOcs();
+      subscribeObjetivos();
+    } catch (e) {
+      console.error('firestore init error', e);
+      renderDbBanner(false);
+    }
+  }
+  function renderDbBanner(connected) {
+    var el = document.getElementById('db-banner');
+    if (!el) return;
+    if (connected) { el.innerHTML = ''; return; }
+    el.innerHTML = '<div class="banner" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">' +
+      '<span style="display:flex; gap:8px;"><span>⚠️</span><span><strong>Sin conexión con la base de datos compartida.</strong> Los datos guardados por el equipo no se han perdido, pero esta pestaña no los está recibiendo ahora mismo.</span></span>' +
+      '<button type="button" class="btn ghost sm" id="btn-reload-page" style="white-space:nowrap;">Recargar página</button>' +
+      '</div>';
+    var reloadBtn = document.getElementById('btn-reload-page');
+    if (reloadBtn) reloadBtn.addEventListener('click', function () { location.reload(); });
+  }
+  /** Aplica una lista de OC (venga de un onSnapshot o de un get() suelto) al estado, conservando
+   *  cualquier fila "optimista" que este resultado todavía no incluya (ver saveOc/updateOc). */
+  function applyOcsResult(arr) {
+    var arrCreatedAts = {};
+    arr.forEach(function (o) { if (o.createdAt) arrCreatedAts[o.createdAt] = true; });
+    var pending = state.ocs.filter(function (o) { return o._pending && !arrCreatedAts[o.createdAt]; });
+    state.ocs = pending.concat(arr);
+    state.ocsLoaded = true;
+    state.dbSubError = null;
+    state.ocsLoadTimedOut = false;
+    if (!state.identity) return;
+    renderMatriz();
+    renderDashboard();
+  }
+  /** Lectura puntual (no en vivo) de las OC — más simple y fiable que una suscripción para la
+   *  carga inicial: si la suscripción en tiempo real tarda o se cuelga, esto igual trae los datos. */
+  function loadOcsOnce() {
+    return state.db.collection('ocs').orderBy('createdAt', 'desc').get().then(function (snap) {
+      var arr = [];
+      snap.docs.forEach(function (d) { var data = d.data(); data.id = d.id; arr.push(data); });
+      applyOcsResult(arr);
+    }).catch(function (err) {
+      console.error('db get error', err);
+    });
+  }
+  function subscribeOcs() {
+    // Carga rápida e independiente de la suscripción en tiempo real — si esta última no llega a
+    // establecerse (visto en producción: se queda "conectando" para siempre sin avisar), esto solo
+    // ya basta para ver las OC guardadas.
+    loadOcsOnce();
+    // Salvaguarda global: si NADA (ni el get() puntual, ni el onSnapshot en vivo) ha resuelto en 5s,
+    // no dejamos al usuario mirando "Cargando OC…" sin ningún botón — aunque loadOcsOnce() ya debería
+    // haber mostrado los datos bastante antes de eso en el caso normal. Esto cubre el caso visto en
+    // producción donde el puente con la plataforma se queda colgado sin resolver NI rechazar ninguna
+    // llamada (ni get, ni onSnapshot), así que ambos caminos necesitan su propio backstop por tiempo.
+    setTimeout(function () {
+      if (!state.ocsLoaded) {
+        state.ocsLoadTimedOut = true;
+        if (state.identity) { renderMatriz(); renderDashboard(); }
+      }
+    }, 5000);
+    var firstSnapshotSettled = false;
+    var firstSnapshotTimeout = setTimeout(function () {
+      if (!firstSnapshotSettled) {
+        state.ocsLoadTimedOut = true;
+        if (state.identity) { renderMatriz(); renderDashboard(); }
+      }
+    }, 8000);
+    state.db.collection('ocs').orderBy('createdAt', 'desc').onSnapshot(function (snap) {
+      firstSnapshotSettled = true; clearTimeout(firstSnapshotTimeout);
+      var arr = [];
+      snap.docs.forEach(function (d) { var data = d.data(); data.id = d.id; arr.push(data); });
+      applyOcsResult(arr);
+    }, function (err) {
+      // Suscripción muerta (bug conocido de la plataforma o de red): sin esto el usuario se queda
+      // viendo "Todavía no hay ninguna OC" para siempre aunque sí haya datos en el servidor.
+      firstSnapshotSettled = true; clearTimeout(firstSnapshotTimeout);
+      console.error('db error', err);
+      state.dbSubError = err;
+      if (!state.identity) return;
+      renderMatriz();
+      renderDashboard();
+    });
+  }
+  function saveOc(payload) {
+    if (!state.usingDb) {
+      payload.id = 'local-' + Date.now();
+      state.ocs.unshift(payload);
+      renderRoute();
+      return Promise.resolve(payload);
+    }
+    // Optimista: la OC aparece en la Matriz al instante (con datos que ya tenemos en el navegador)
+    // en vez de esperar al viaje de ida y vuelta al servidor — ese viaje sigue ocurriendo por
+    // debajo, y en cuanto confirma sustituimos la fila provisional por la definitiva.
+    var pendingId = 'pending-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    var optimistic = Object.assign({}, payload, { id: pendingId, _pending: true });
+    state.ocs.unshift(optimistic);
+    renderMatriz();
+    renderDashboard();
+    return state.db.collection('ocs').add(payload).then(function (ref) {
+      var idx = state.ocs.findIndex(function (o) { return o.id === pendingId; });
+      if (idx > -1) {
+        // El snapshot en tiempo real aún no había llegado: sustituimos la fila provisional por la definitiva.
+        state.ocs[idx] = Object.assign({}, payload, { id: ref.id });
+        renderMatriz();
+        renderDashboard();
+      }
+      // Si idx === -1, el snapshot ya llegó primero y sustituyó la fila provisional por la real
+      // (ver el filtro por createdAt en subscribeOcs) — no hay nada que insertar de nuevo.
+      return ref;
+    }).catch(function (err) {
+      // Guardado real fallido: retiramos la fila provisional para no dejar datos fantasma.
+      state.ocs = state.ocs.filter(function (o) { return o.id !== pendingId; });
+      renderMatriz();
+      renderDashboard();
+      throw err;
+    });
+  }
+  function updateOc(id, patch) {
+    if (!state.usingDb) {
+      var idx = state.ocs.findIndex(function (o) { return o.id === id; });
+      if (idx > -1) state.ocs[idx] = Object.assign({}, state.ocs[idx], patch);
+      renderRoute();
+      return Promise.resolve();
+    }
+    // Optimista también al editar: el cambio se ve ya en la Matriz mientras viaja al servidor;
+    // si el guardado real falla, se deshace para no dejar la vista con datos no guardados.
+    var idx2 = state.ocs.findIndex(function (o) { return o.id === id; });
+    var previous = idx2 > -1 ? state.ocs[idx2] : null;
+    if (idx2 > -1) {
+      state.ocs[idx2] = Object.assign({}, state.ocs[idx2], patch);
+      renderMatriz();
+      renderDashboard();
+    }
+    return state.db.doc('ocs/' + id).update(patch).catch(function (err) {
+      if (previous) {
+        var idxNow = state.ocs.findIndex(function (o) { return o.id === id; });
+        if (idxNow > -1) state.ocs[idxNow] = previous;
+        renderMatriz();
+        renderDashboard();
+      }
+      throw err;
+    });
+  }
+
+  /* ================= OBJETIVOS (facturación / beneficio por año y departamento) ================= */
+  function subscribeObjetivos() {
+    state.db.collection('objetivos').onSnapshot(function (snap) {
+      var map = {};
+      snap.docs.forEach(function (d) { map[d.id] = d.data(); });
+      state.objetivos = map;
+      if (!state.identity) return;
+      renderDashboard();
+    }, function (err) { console.error('db error objetivos', err); });
+  }
+  function defaultObjetivo() {
+    return { facturacionAnual: 0, beneficioAnual: 0, pesos: { influencers: 25, rrss: 25, repr: 25, pr: 25 } };
+  }
+  function getObjetivo(year) {
+    var raw = state.objetivos[String(year)];
+    if (!raw) return defaultObjetivo();
+    var pesos = raw.pesos || {};
+    return {
+      facturacionAnual: Number(raw.facturacionAnual) || 0,
+      beneficioAnual: Number(raw.beneficioAnual) || 0,
+      pesos: {
+        influencers: pesos.influencers != null ? Number(pesos.influencers) || 0 : 25,
+        rrss: pesos.rrss != null ? Number(pesos.rrss) || 0 : 25,
+        repr: pesos.repr != null ? Number(pesos.repr) || 0 : 25,
+        pr: pesos.pr != null ? Number(pesos.pr) || 0 : 25
+      }
+    };
+  }
+  function saveObjetivo(year, data) {
+    var id = String(year);
+    var payload = {
+      facturacionAnual: Number(data.facturacionAnual) || 0,
+      beneficioAnual: Number(data.beneficioAnual) || 0,
+      pesos: data.pesos,
+      updatedBy: state.identity,
+      updatedAt: new Date().toISOString()
+    };
+    if (!state.usingDb) {
+      state.objetivos[id] = payload;
+      return Promise.resolve();
+    }
+    return state.db.doc('objetivos/' + id).set(payload);
+  }
+  /** Objetivo y real (facturación/beneficio) por departamento y mes, para el año dado. */
+  function computeCumplimiento(year) {
+    var obj = getObjetivo(year);
+    var yearOcs = getOcs().filter(function (o) { return yearOfMonth(o.fechaCampana || o.fechaLead) === Number(year) && o.estadoOC !== 'cancelada'; });
+    return DEPARTMENTS.map(function (d) {
+      var peso = obj.pesos[d.key] || 0;
+      var targetFactAnual = obj.facturacionAnual * peso / 100;
+      var targetBenAnual = obj.beneficioAnual * peso / 100;
+      var monthly = [];
+      for (var mi = 0; mi < 12; mi++) {
+        var fact = 0, ben = 0;
+        yearOcs.forEach(function (o) {
+          if (o.departamento !== d.key) return;
+          if (monthIdxOfMonth(o.fechaCampana || o.fechaLead) !== mi) return;
+          var c = computeRow(o); fact += c.facturacion; ben += c.beneficio;
+        });
+        monthly.push({ fact: fact, ben: ben, targetFact: targetFactAnual / 12, targetBen: targetBenAnual / 12 });
+      }
+      var realFact = monthly.reduce(function (a, m) { return a + m.fact; }, 0);
+      var realBen = monthly.reduce(function (a, m) { return a + m.ben; }, 0);
+      return {
+        dept: d, peso: peso,
+        targetFactAnual: targetFactAnual, targetBenAnual: targetBenAnual,
+        realFact: realFact, realBen: realBen,
+        pctFact: targetFactAnual > 0 ? (realFact / targetFactAnual * 100) : 0,
+        pctBen: targetBenAnual > 0 ? (realBen / targetBenAnual * 100) : 0,
+        monthly: monthly
+      };
+    });
+  }
+
+  /* ================= GATE ================= */
+  function loadLastIdentity() { try { return localStorage.getItem('hm_oc_identity') || null; } catch (e) { return null; } }
+  function saveLastIdentity(name) { try { localStorage.setItem('hm_oc_identity', name); } catch (e) {} }
+
+  /* ================= AUTH (Google / Firebase) ================= */
+  /** Paso inicial del gate según la cuenta de Google: admin → modos de Ángel, consulta → modos
+   *  de solo lectura, equipo con nombre asignado → sus modos, resto del dominio → elegir nombre. */
+  function startStepForUser(user) {
+    var email = lc(user.email);
+    state.isViewer = false;
+    if (ADMIN_EMAILS.indexOf(email) > -1) {
+      state.gatePickedName = ADMIN_NAME;
+      return 'adminmode';
+    }
+    if (VIEWER_EMAILS[email]) {
+      state.isViewer = true;
+      state.gatePinName = VIEWER_EMAILS[email];
+      return 'viewermode';
+    }
+    if (TEAM_EMAILS[email]) {
+      state.gatePickedName = TEAM_EMAILS[email];
+      return 'mode';
+    }
+    if (state.gatePickedName === ADMIN_NAME) state.gatePickedName = null;
+    return 'name';
+  }
+  function isAllowedUser(user) {
+    if (!user || !user.email || !user.emailVerified) return false;
+    var email = lc(user.email);
+    if (ADMIN_EMAILS.indexOf(email) > -1 || VIEWER_EMAILS[email] || TEAM_EMAILS[email]) return true;
+    return !!ALLOWED_DOMAIN && email.slice(-(ALLOWED_DOMAIN.length + 1)) === '@' + ALLOWED_DOMAIN;
+  }
+  function signIn() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    var params = { prompt: 'select_account' };
+    if (ALLOWED_DOMAIN) params.hd = ALLOWED_DOMAIN;
+    provider.setCustomParameters(params);
+    state.authError = '';
+    firebase.auth().signInWithPopup(provider).catch(function (err) {
+      if (err && (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment')) {
+        firebase.auth().signInWithRedirect(provider);
+        return;
+      }
+      if (err && err.code === 'auth/popup-closed-by-user') return;
+      state.authError = 'No se ha podido iniciar sesión (' + (err && err.code || 'error') + ').';
+      renderGate();
+    });
+  }
+  function signOut() {
+    firebase.auth().signOut();
+  }
+  function showGate() {
+    document.getElementById('app-root').style.display = 'none';
+    document.getElementById('gate-root').style.display = 'flex';
+  }
+  function initAuth() {
+    if (!window.firebase || !CFG.firebase || !CFG.firebase.apiKey) {
+      document.getElementById('gate-root').innerHTML = '<div class="gate-card"><p class="gate-error">Falta la configuración de Firebase (public/config.js).</p></div>';
+      return;
+    }
+    firebase.initializeApp(CFG.firebase);
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user && !isAllowedUser(user)) {
+        state.authError = 'La cuenta ' + (user.email || '') + ' no tiene acceso a esta herramienta.';
+        firebase.auth().signOut();
+        return;
+      }
+      state.authUser = user || null;
+      state.identity = null;
+      state.mode = null;
+      showGate();
+      if (user) {
+        state.authError = '';
+        state.gateStep = startStepForUser(user);
+        initCapabilities();
+      } else {
+        state.isViewer = false;
+        state.gatePickedName = null;
+        state.gateStep = 'name';
+      }
+      renderGate();
+    });
+  }
+
+  function renderGate() {
+    var root = document.getElementById('gate-root');
+    var last = loadLastIdentity();
+    if (!state.gatePickedName && last && TEAM_NAMES.indexOf(last) > -1 && last !== ADMIN_NAME) state.gatePickedName = last;
+
+    if (!state.authUser) {
+      root.innerHTML =
+        '<div class="gate-card">' +
+        '<img class="gate-logo" src="' + window.APP_DATA.logo + '" alt="Hello Monday">' +
+        '<p class="gate-greeting"><strong>Herramienta interna</strong> del equipo de Hello Monday.<br>Accede con tu cuenta de Google corporativa.</p>' +
+        (state.authError ? '<p class="gate-error">' + escapeHtml(state.authError) + '</p>' : '') +
+        '<div class="gate-actions" style="justify-content:center;">' +
+        '<button type="button" class="btn primary" id="gate-google">Entrar con Google</button>' +
+        '</div>' +
+        '<p class="gate-hint">El acceso está restringido a cuentas autorizadas.</p>' +
+        '</div>';
+      document.getElementById('gate-google').addEventListener('click', signIn);
+      return;
+    }
+
+    if (state.gateStep === 'name') {
+      root.innerHTML =
+        '<div class="gate-card">' +
+        '<img class="gate-logo" src="' + window.APP_DATA.logo + '" alt="Hello Monday">' +
+        '<p class="gate-greeting"><strong>Hello</strong>, ¡qué bien que me traigas otra OC por aquí! 👋<br>Antes de entrar, dime brevemente:</p>' +
+        '<p class="gate-question">¿Quién del equipo eres?</p>' +
+        '<div class="name-grid">' + TEAM_NAMES.filter(function (n) { return n !== ADMIN_NAME; }).map(function (n) {
+          return '<button type="button" class="name-chip' + (state.gatePickedName === n ? ' selected' : '') + '" data-name="' + escapeHtml(n) + '">' + escapeHtml(n) + '</button>';
+        }).join('') + '</div>' +
+        '<p class="gate-hint">Solo para saber quién registra cada OC. Sesión: ' + escapeHtml(state.authUser.email) + '</p>' +
+        '<div class="gate-actions">' +
+        '<button type="button" class="gate-back" id="gate-signout">Cerrar sesión</button>' +
+        '<button type="button" class="btn primary" id="gate-next" ' + (state.gatePickedName ? '' : 'disabled') + '>Continuar →</button>' +
+        '</div></div>';
+
+      root.querySelectorAll('.name-chip[data-name]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          state.gatePickedName = btn.getAttribute('data-name');
+          renderGate();
+        });
+      });
+      var next = document.getElementById('gate-next');
+      if (next) next.addEventListener('click', function () { state.gateStep = 'mode'; renderGate(); });
+      document.getElementById('gate-signout').addEventListener('click', signOut);
+    } else if (state.gateStep === 'adminmode') {
+      root.innerHTML =
+        '<div class="gate-card">' +
+        '<img class="gate-logo" src="' + window.APP_DATA.logo + '" alt="Hello Monday">' +
+        '<p class="gate-greeting">👑 Hola <strong>Ángel</strong> — ¿qué vas a hacer?</p>' +
+        '<div class="mode-grid">' +
+        modeCard('ocwork', true) +
+        modeCard('matriz', true) +
+        modeCard('dashboard', true) +
+        modeCard('objetivos', true) +
+        '</div>' +
+        '<div class="gate-actions">' +
+        '<button type="button" class="gate-back" id="gate-back-adminmode">Cerrar sesión</button>' +
+        '<button type="button" class="btn primary" id="gate-enter-adminmode" disabled>Entrar</button>' +
+        '</div></div>';
+
+      var pickedModeA = null;
+      root.querySelectorAll('.mode-card').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (btn.disabled) return;
+          pickedModeA = btn.getAttribute('data-mode');
+          root.querySelectorAll('.mode-card').forEach(function (b) { b.classList.toggle('selected', b === btn); });
+          document.getElementById('gate-enter-adminmode').disabled = false;
+        });
+      });
+      document.getElementById('gate-back-adminmode').addEventListener('click', signOut);
+      document.getElementById('gate-enter-adminmode').addEventListener('click', function () {
+        if (!pickedModeA) return;
+        if (pickedModeA === 'ocwork') {
+          state.gateStep = 'adminocmode';
+          renderGate();
+        } else {
+          enterApp(ADMIN_NAME, pickedModeA);
+        }
+      });
+    } else if (state.gateStep === 'adminocmode') {
+      root.innerHTML =
+        '<div class="gate-card">' +
+        '<img class="gate-logo" src="' + window.APP_DATA.logo + '" alt="Hello Monday">' +
+        '<p class="gate-greeting">🔑 Hola <strong>Ángel</strong> — ¿qué haces con la OC?</p>' +
+        '<div class="mode-grid">' +
+        modeCard('nueva', true) +
+        modeCard('edicion', true) +
+        modeCard('cancelar', true) +
+        modeCard('cierre', true) +
+        '</div>' +
+        '<div class="gate-actions">' +
+        '<button type="button" class="gate-back" id="gate-back-adminocmode">← Volver</button>' +
+        '<button type="button" class="btn primary" id="gate-enter-adminocmode" disabled>Entrar</button>' +
+        '</div></div>';
+
+      var pickedModeOC = null;
+      root.querySelectorAll('.mode-card').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (btn.disabled) return;
+          pickedModeOC = btn.getAttribute('data-mode');
+          root.querySelectorAll('.mode-card').forEach(function (b) { b.classList.toggle('selected', b === btn); });
+          document.getElementById('gate-enter-adminocmode').disabled = false;
+        });
+      });
+      document.getElementById('gate-back-adminocmode').addEventListener('click', function () { state.gateStep = 'adminmode'; renderGate(); });
+      document.getElementById('gate-enter-adminocmode').addEventListener('click', function () {
+        if (!pickedModeOC) return;
+        enterApp(ADMIN_NAME, pickedModeOC);
+      });
+    } else if (state.gateStep === 'viewermode') {
+      var vName = state.gatePinName;
+      root.innerHTML =
+        '<div class="gate-card">' +
+        '<img class="gate-logo" src="' + window.APP_DATA.logo + '" alt="Hello Monday">' +
+        '<p class="gate-greeting">👀 Hola <strong>' + escapeHtml(vName) + '</strong> — ¿qué quieres consultar?</p>' +
+        '<div class="mode-grid">' +
+        modeCard('matriz', true) +
+        modeCard('dashboard', true) +
+        modeCard('objetivos', true) +
+        '</div>' +
+        '<div class="gate-actions">' +
+        '<button type="button" class="gate-back" id="gate-back-viewermode">Cerrar sesión</button>' +
+        '<button type="button" class="btn primary" id="gate-enter-viewermode" disabled>Entrar</button>' +
+        '</div></div>';
+
+      var pickedModeV = null;
+      root.querySelectorAll('.mode-card').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (btn.disabled) return;
+          pickedModeV = btn.getAttribute('data-mode');
+          root.querySelectorAll('.mode-card').forEach(function (b) { b.classList.toggle('selected', b === btn); });
+          document.getElementById('gate-enter-viewermode').disabled = false;
+        });
+      });
+      document.getElementById('gate-back-viewermode').addEventListener('click', signOut);
+      document.getElementById('gate-enter-viewermode').addEventListener('click', function () {
+        if (!pickedModeV) return;
+        enterApp(vName, pickedModeV);
+      });
+    } else {
+      var isAdmin = state.gatePickedName === ADMIN_NAME;
+      root.innerHTML =
+        '<div class="gate-card">' +
+        '<img class="gate-logo" src="' + window.APP_DATA.logo + '" alt="Hello Monday">' +
+        '<p class="gate-greeting">Hola <strong>' + escapeHtml(state.gatePickedName) + '</strong> — ¿qué vas a hacer?</p>' +
+        '<div class="mode-grid">' +
+        modeCard('nueva', true) +
+        modeCard('edicion', true) +
+        modeCard('cancelar', true) +
+        modeCard('cierre', isAdmin) +
+        '</div>' +
+        (isAdmin ? '' : '<p class="gate-hint">El cierre de OC (datos finales) solo lo hace Ángel.</p>') +
+        '<div class="gate-actions">' +
+        '<button type="button" class="gate-back" id="gate-back">← Cambiar de persona</button>' +
+        '<button type="button" class="btn primary" id="gate-enter" disabled>Entrar</button>' +
+        '</div></div>';
+
+      var pickedMode = null;
+      root.querySelectorAll('.mode-card').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (btn.disabled) return;
+          pickedMode = btn.getAttribute('data-mode');
+          root.querySelectorAll('.mode-card').forEach(function (b) { b.classList.toggle('selected', b === btn); });
+          document.getElementById('gate-enter').disabled = false;
+        });
+      });
+      document.getElementById('gate-back').addEventListener('click', function () {
+        if (TEAM_EMAILS[lc(state.authUser.email)]) { signOut(); return; }
+        state.gateStep = 'name'; renderGate();
+      });
+      document.getElementById('gate-enter').addEventListener('click', function () {
+        if (!pickedMode) return;
+        enterApp(state.gatePickedName, pickedMode);
+      });
+    }
+  }
+  function modeCard(key, enabled) {
+    var m = MODES[key];
+    return '<button type="button" class="mode-card" data-mode="' + key + '" ' + (enabled ? '' : 'disabled') + '>' +
+      '<span class="mi">' + m.icon + '</span><span class="mtext"><span class="mt">' + m.label + '</span><span class="md">' + m.desc + '</span></span></button>';
+  }
+
+  function enterApp(name, mode) {
+    state.identity = name;
+    state.mode = mode;
+    if (!state.isViewer) saveLastIdentity(name);
+    document.getElementById('gate-root').style.display = 'none';
+    document.getElementById('app-root').style.display = '';
+    routeFromMode();
+    applyRolePermissions();
+    renderIdentityPill();
+    initYearSelects();
+    renderRoute();
+  }
+
+  function routeFromMode() {
+    state.editingId = null;
+    state.formOc = newEmptyOc();
+    state.cloneNotice = '';
+    state.formIsClone = false;
+    state.saveNotice = '';
+    if (state.mode === 'nueva' || state.mode === 'ocwork') {
+      switchTab('nueva');
+    } else if (state.mode === 'edicion') {
+      state.matrizEstado = 'all';
+      state.matrizBanner = 'Modo edición — haz clic en una de tus OC para editar sus datos.';
+      switchTab('matriz');
+    } else if (state.mode === 'cierre') {
+      state.matrizEstado = 'revision';
+      state.matrizBanner = 'Modo cierre (Ángel) — haz clic en una OC en revisión para introducir los datos finales.';
+      switchTab('matriz');
+    } else if (state.mode === 'cancelar') {
+      state.matrizEstado = 'revision';
+      state.matrizBanner = 'Modo cancelación — haz clic en una OC en revisión para cancelarla.';
+      switchTab('matriz');
+    } else if (state.mode === 'matriz') {
+      state.matrizEstado = 'all';
+      state.matrizBanner = state.isViewer ? 'Modo consulta — solo lectura. Haz clic en una OC para ver su detalle.' : '';
+      switchTab('matriz');
+    } else if (state.mode === 'dashboard') {
+      switchTab('dashboard');
+    } else if (state.mode === 'objetivos') {
+      state.autoOpenObjetivos = true;
+      switchTab('dashboard');
+    } else if (state.mode === 'consulta') {
+      state.matrizEstado = 'all';
+      state.matrizBanner = 'Modo consulta — solo lectura. Haz clic en una OC para ver su detalle.';
+      switchTab('matriz');
+    }
+  }
+
+  /** Muestra/oculta pestañas y renombra la Matriz según el rol: admin ve todo,
+   *  viewer (consulta) ve Matriz/Dashboard de solo lectura, el resto solo sus propias OC. */
+  function applyRolePermissions() {
+    var role = getRole();
+    var tabNueva = document.getElementById('tab-btn-nueva');
+    var tabDash = document.getElementById('tab-btn-dashboard');
+    var tabMatriz = document.getElementById('tab-btn-matriz');
+    var matrizTitle = document.getElementById('matriz-title-word');
+    var matrizSub = document.getElementById('matriz-subtitle');
+
+    tabNueva.hidden = role === 'viewer';
+    tabDash.hidden = false;
+    tabMatriz.textContent = role === 'regular' ? 'Mis OC' : 'Matriz';
+    if (matrizTitle) matrizTitle.textContent = role === 'regular' ? 'Mis OC' : 'Matriz';
+    if (matrizSub) matrizSub.textContent = role === 'regular'
+      ? 'Aquí ves únicamente las OC que tú has creado.'
+      : (role === 'viewer' ? 'Vista de solo lectura, agrupada por departamento y ordenada por fecha de campaña.' : 'Cada OC guardada aparece aquí, agrupada por departamento y ordenada por fecha de campaña.');
+
+    var dashTitle = document.getElementById('dash-title-word');
+    var dashSub = document.getElementById('dash-subtitle');
+    var deptFilter = role === 'regular' ? deptOfIdentity(state.identity) : null;
+    if (dashTitle) dashTitle.textContent = deptFilter ? ('Dashboard · ' + deptByKey(deptFilter).short) : 'Dashboard';
+    if (dashSub) dashSub.textContent = deptFilter
+      ? 'Resultado del año seleccionado para tu departamento, más el objetivo y grado de cumplimiento.'
+      : 'Resultado del año seleccionado por departamento, evolución mensual, estado de facturación y objetivos.';
+  }
+
+  function renderIdentityPill() {
+    var el = document.getElementById('identity-pill');
+    if (!el) return;
+    var role = getRole();
+    var icon = role === 'admin' ? '👑 ' : (role === 'viewer' ? '👀 ' : '');
+    el.innerHTML = '<span>' + icon + '<b>' + escapeHtml(state.identity) + '</b></span>' +
+      '<span class="mode-tag">' + MODES[state.mode].label + '</span>' +
+      '<button type="button" id="btn-change-identity">Cambiar</button>';
+    document.getElementById('btn-change-identity').addEventListener('click', function () {
+      showGate();
+      state.gateStep = startStepForUser(state.authUser);
+      renderGate();
+    });
+  }
+
+  /* ================= tabs ================= */
+  function switchTab(tab) {
+    state.activeTab = tab;
+    document.querySelectorAll('nav.tabs button').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === tab ? 'true' : 'false'); });
+    document.querySelectorAll('.panel').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== tab; });
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('nav.tabs button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var tab = btn.getAttribute('data-tab');
+        if (tab === 'nueva') { state.editingId = null; state.formOc = newEmptyOc(); state.cloneNotice = ''; state.formIsClone = false; state.saveNotice = ''; }
+        switchTab(tab);
+        renderRoute();
+      });
+    });
+  });
+
+  /* ================= FORM (create / edit) ================= */
+  function openForEdit(id) {
+    var oc = getOcs().find(function (o) { return o.id === id; });
+    if (!oc) return;
+    state.editingId = id;
+    state.formOc = JSON.parse(JSON.stringify(oc));
+    if (!state.formOc.costes) state.formOc.costes = [];
+    state.autoExpandCierre = state.mode === 'cierre' || isAdminIdentity() && oc.estadoOC === 'revision' && state.mode !== 'edicion';
+    switchTab('nueva');
+    renderRoute();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function fieldHtml(opts) {
+    return '<div class="field' + (opts.span ? ' span-' + opts.span : '') + (opts.computed ? ' computed' : '') + '">' +
+      '<label for="' + opts.id + '">' + opts.label + '</label>' +
+      (opts.el || ('<input type="' + (opts.type || 'text') + '" id="' + opts.id + '" value="' + escapeHtml(opts.value == null ? '' : opts.value) + '"' +
+        (opts.placeholder ? ' placeholder="' + escapeHtml(opts.placeholder) + '"' : '') +
+        (opts.readonly ? ' readonly' : '') + (opts.disabled ? ' disabled' : '') +
+        (opts.step ? ' step="' + opts.step + '"' : '') + (opts.min != null ? ' min="' + opts.min + '"' : '') + '>')) +
+      (opts.hint ? '<span class="hint">' + opts.hint + '</span>' : '') + '</div>';
+  }
+  function selectHtml(id, options, value, disabled) {
+    return '<select id="' + id + '"' + (disabled ? ' disabled' : '') + '>' + options.map(function (o) {
+      var v = typeof o === 'string' ? o : o.value, l = typeof o === 'string' ? o : o.label;
+      return '<option value="' + escapeHtml(v) + '"' + (v === value ? ' selected' : '') + '>' + escapeHtml(l) + '</option>';
+    }).join('') + '</select>';
+  }
+  function sinoSelect(id, value, disabled) { return selectHtml(id, ['NO', 'SI'], value || 'NO', disabled); }
+
+  function renderForm() {
+    var mount = document.getElementById('form-mount');
+    if (!mount) return;
+    var oc = state.formOc || newEmptyOc();
+    var isEdit = !!state.editingId;
+    var isAdmin = isAdminIdentity();
+    var isViewer = state.isViewer;
+    var closed = oc.estadoOC === 'cerrada';
+    var cancelled = oc.estadoOC === 'cancelada';
+    var canEditPrevisto = !isViewer && (isAdmin || !(closed || cancelled));
+    var isClone = !isEdit && !!state.formIsClone;
+    var lockClone = !canEditPrevisto || isClone; // campos fijos de una OC recurrente clonada: bloqueados además de por cierre/cancelación
+    var d = deptByKey(oc.departamento);
+
+    document.getElementById('form-title').textContent = isEdit ? ('Editar OC — ' + (oc.proyecto || oc.clienteComercial || '')) : 'Registrar una nueva OC';
+    document.getElementById('form-subtitle').textContent = isEdit
+      ? 'Estás editando una OC guardada. Los cambios se ven al instante en la Matriz.'
+      : 'Cuando una propuesta se va a facturar con firmeza, rellena esta OC. En cuanto la guardes aparecerá en la Matriz, en su departamento y mes de campaña.';
+
+    var backBtn = isEdit ? '<button type="button" class="btn ghost sm" id="btn-back-matriz">← Volver a la ' + (getRole() === 'regular' ? 'lista' : 'Matriz') + '</button>' : '';
+
+    var canCancel = isEdit && oc.estadoOC === 'revision' && canCancelOc(oc);
+    var canReactivate = isEdit && cancelled && canCancelOc(oc);
+    var cancelBtn = canCancel ? '<button type="button" class="btn ghost sm" id="btn-cancelar-oc" style="color:var(--danger); border-color:var(--danger);">Cancelar OC</button>' : '';
+    var reactivarBtn = canReactivate ? '<button type="button" class="btn ghost sm" id="btn-reactivar-oc">Reactivar OC</button>' : '';
+
+    var lockedBanner = isViewer
+      ? '<div class="banner info" style="margin-bottom:4px;"><span>👀</span><span><strong>Modo consulta.</strong> Puedes ver todos los datos de esta OC pero no editarlos.</span></div>'
+      : (cancelled
+        ? '<div class="banner" style="margin-bottom:4px; background:var(--danger-bg); border-color:var(--danger);"><span>🚫</span><span><strong>Esta OC está cancelada' + (oc.canceladaPor ? ' por ' + escapeHtml(oc.canceladaPor) : '') + '.</strong>' + (oc.motivoCancelacion ? ' Motivo: ' + escapeHtml(oc.motivoCancelacion) + '.' : '') + ' No cuenta en la Matriz, el Dashboard ni los Objetivos.</span></div>'
+        : (!canEditPrevisto ? '<div class="banner" style="margin-bottom:4px;"><span>🔒</span><span><strong>Esta OC está cerrada.</strong> Solo Ángel puede modificar sus datos.</span></div>' : ''));
+
+    var billingRow = isEdit ? ('<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' + pillOC(oc.estadoOC) +
+      (isViewer ? pillFacturacion(oc.estadoFacturacion) : ('<label style="font-size:12px; color:var(--ink-soft); margin-left:2px;">Facturación</label>' +
+        selectHtml('hdr-estadoFacturacion', Object.keys(BILLING).map(function (k) { return { value: k, label: BILLING[k].label }; }), oc.estadoFacturacion))) +
+      '</div>') : '';
+
+    var saveNoticeHtml = (!isEdit && state.saveNotice)
+      ? '<div class="banner ok" style="margin-bottom:4px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">' +
+          '<span style="display:flex; gap:8px;"><span>✓</span><span>' + escapeHtml(state.saveNotice) + '</span></span>' +
+          '<button type="button" class="btn ghost sm" id="btn-cerrar-save-notice" style="white-space:nowrap;">Cerrar</button>' +
+        '</div>'
+      : '';
+    var cloneNoticeHtml = (!isEdit && state.cloneNotice)
+      ? '<div class="banner info" style="margin-bottom:4px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">' +
+          '<span style="display:flex; gap:8px;"><span>🔁</span><span>' + escapeHtml(state.cloneNotice) + '</span></span>' +
+          '<button type="button" class="btn ghost sm" id="btn-quitar-clone" style="white-space:nowrap;">Quitar plantilla</button>' +
+        '</div>'
+      : '';
+    var cloneBoxHtml = (!isEdit && !isViewer)
+      ? ('<details class="collapsible" id="clone-details" style="margin-bottom:4px;">' +
+          '<summary>🔁 ¿Cliente recurrente? Continuar desde una OC ya creada</summary>' +
+          '<div style="padding:10px 2px 4px;">' +
+            '<p class="hint" style="margin:0 0 8px;">Busca por cliente, proyecto o nº de presupuesto. Se copiarán todos los datos excepto ingresos, costes y horas — así solo tendrás que actualizar el mes de campaña y los números de este mes.</p>' +
+            '<input type="text" id="clone-search" placeholder="Buscar cliente, proyecto o presupuesto…" style="width:100%; max-width:420px;">' +
+            '<div id="clone-results" style="margin-top:10px; display:flex; flex-direction:column; gap:6px;"></div>' +
+          '</div>' +
+        '</details>')
+      : '';
+
+    var html = '';
+    html += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; flex-wrap:wrap; gap:10px;">' +
+      '<span style="font-size:12.5px; color:var(--ink-mute);">Registrando como <strong style="color:var(--ink);">' + escapeHtml(state.identity) + '</strong></span>' +
+      billingRow + cancelBtn + reactivarBtn + backBtn + '</div>';
+    html += lockedBanner;
+    html += saveNoticeHtml;
+    html += cloneNoticeHtml;
+    html += cloneBoxHtml;
+
+    html += '<form class="oc-form" id="oc-form">';
+
+    // 1. Datos cliente
+    html += '<fieldset class="section"><legend><span class="n">1</span> Datos cliente</legend>';
+    html += '<div class="grid cols-2">' + fieldHtml({ id: 'f-tieneFiscales-label', label: '¿Tenemos datos fiscales del cliente?', el: sinoSelect('f-tieneFiscales', oc.tieneFiscales, lockClone) }) + '</div>';
+    html += '<div class="subgrid' + (oc.tieneFiscales === 'SI' ? ' open' : '') + '" id="fiscales-subgrid">' +
+      fieldHtml({ id: 'f-nombreSocial', label: 'Nombre social', value: oc.nombreSocial, disabled: lockClone }) +
+      fieldHtml({ id: 'f-cif', label: 'CIF', value: oc.cif, disabled: lockClone }) +
+      fieldHtml({ id: 'f-direccion', label: 'Dirección', value: oc.direccion, disabled: lockClone }) +
+      fieldHtml({ id: 'f-contactoComercial', label: 'Contacto comercial', value: oc.contactoComercial, disabled: lockClone }) +
+      fieldHtml({ id: 'f-contactoFacturacion', label: 'Contacto facturación', value: oc.contactoFacturacion, disabled: lockClone }) +
+      '</div></fieldset>';
+
+    // 2. Datos generales
+    html += '<fieldset class="section"><legend><span class="n">2</span> Datos generales</legend><div class="grid">';
+    html += fieldHtml({ id: 'f-proyecto', label: 'Nombre del proyecto (Holded)', value: oc.proyecto, span: 2, disabled: lockClone, placeholder: 'p. ej. HSN' });
+    html += fieldHtml({ id: 'f-clienteComercial', label: 'Cliente — nombre comercial', value: oc.clienteComercial, disabled: lockClone });
+    html += fieldHtml({ id: 'f-presupuesto', label: 'Nº presupuesto Holded', value: oc.presupuesto, disabled: lockClone, placeholder: 'HMPT115/26', hint: 'Nº o enlace del presupuesto en Holded' });
+    html += fieldHtml({ id: 'f-ocInterno', label: 'Nº OC interno', value: oc.ocInterno || generateOcInterno(oc.presupuesto), readonly: true, computed: true });
+    html += fieldHtml({ id: 'f-fechaLead', label: 'Fecha lead', type: 'month', value: oc.fechaLead, disabled: lockClone, hint: isClone ? 'Se mantiene igual que en la OC de origen' : undefined });
+    html += fieldHtml({ id: 'f-fechaCampana', label: 'Fecha campaña', type: 'month', value: oc.fechaCampana, disabled: !canEditPrevisto, hint: 'Mes que afecta a la Matriz' });
+    html += '</div></fieldset>';
+
+    // 3. Rentabilidad estimada
+    html += '<fieldset class="section"><legend><span class="n">3</span> Rentabilidad estimada</legend><div class="grid cols-4">';
+    html += fieldHtml({ id: 'f-ingresosPrevisto', label: 'Ingresos previstos (€)', type: 'number', min: 0, step: '0.01', value: oc.ingresosPrevisto, disabled: !canEditPrevisto });
+    html += fieldHtml({ id: 'f-costesPrevisto', label: 'Costes previstos (€)', type: 'number', min: 0, step: '0.01', value: oc.costesPrevisto, disabled: !canEditPrevisto });
+    html += fieldHtml({ id: 'calc-margenPrevisto', label: 'Margen esperado (€)', readonly: true, computed: true, value: fmtEUR(oc.ingresosPrevisto - oc.costesPrevisto) });
+    html += fieldHtml({ id: 'calc-rentPrevisto', label: 'Rentabilidad (%)', readonly: true, computed: true, value: fmtPct(rentPct(oc.ingresosPrevisto, oc.costesPrevisto)) });
+    html += '</div></fieldset>';
+
+    // 4. Equipo y horas
+    html += '<fieldset class="section"><legend><span class="n">4</span> Equipo y horas</legend><div class="grid">';
+    html += fieldHtml({ id: 'f-departamento', label: 'Departamento asociado', el: selectHtml('f-departamento', DEPARTMENTS.map(function (x) { return { value: x.key, label: x.label }; }), oc.departamento, lockClone) });
+    html += fieldHtml({ id: 'calc-responsable', label: 'Responsable de proyecto', readonly: true, computed: true, value: d.responsable });
+    html += fieldHtml({ id: 'f-ejecutivo', label: 'Ejecutivo/a de cuentas', el: selectHtml('f-ejecutivo', ['—'].concat(EJECUTIVO_OPTS), oc.ejecutivo || '—', lockClone) });
+    html += fieldHtml({ id: 'f-asistente1', label: 'Asistente de proyecto', el: selectHtml('f-asistente1', ['—'].concat(EJECUTIVO_OPTS), oc.asistente1 || '—', !canEditPrevisto) });
+    html += fieldHtml({ id: 'f-asistente2', label: 'Asistente de proyecto (2º)', el: selectHtml('f-asistente2', ['—'].concat(EJECUTIVO_OPTS), oc.asistente2 || '—', !canEditPrevisto) });
+    html += fieldHtml({ id: 'f-diseno', label: 'Diseño', el: selectHtml('f-diseno', ['—'].concat(DISENO_OPTS), oc.diseno || '—', !canEditPrevisto) });
+    html += fieldHtml({ id: 'calc-horasPrevistas', label: 'Horas previstas destinadas', readonly: true, computed: true, value: (((oc.ingresosPrevisto - oc.costesPrevisto) || 0) / 100).toFixed(1), hint: 'Margen ÷ 100, orientativo' });
+    html += fieldHtml({ id: 'f-comentarios', label: 'Comentarios', span: 3, el: '<textarea id="f-comentarios" ' + (!canEditPrevisto ? 'disabled' : '') + ' placeholder="p. ej. cliente cerrado con Rocío y Mercedes y Gema.">' + escapeHtml(oc.comentarios) + '</textarea>' });
+    html += '</div></fieldset>';
+
+    // 5. Venta y facturación
+    html += '<fieldset class="section"><legend><span class="n">5</span> Venta y facturación</legend><div class="grid">';
+    html += fieldHtml({ id: 'calc-importeVendido', label: 'Importe vendido final (€)', readonly: true, computed: true, value: fmtEUR(oc.ingresosPrevisto), hint: 'Se toma de ingresos previstos' });
+    html += fieldHtml({ id: 'f-condicionesPago', label: 'Condiciones de pago', value: oc.condicionesPago, disabled: lockClone });
+    html += fieldHtml({ id: 'f-poCliente', label: 'PO cliente', value: oc.poCliente, disabled: lockClone, hint: 'Solo si el cliente da un nº de pedido' });
+    html += fieldHtml({ id: 'f-acuerdoLink', label: 'Acuerdo — adjuntar enlace', type: 'url', value: oc.acuerdoLink, disabled: lockClone, placeholder: 'https://…' });
+    html += fieldHtml({ id: 'f-detallesFacturacion', label: 'Detalles facturación', value: oc.detallesFacturacion, disabled: lockClone, placeholder: 'p. ej. contra factura, previo a servicio…' });
+    html += fieldHtml({ id: 'f-fechaUltimaPublicacion', label: 'Fecha última publicación / acción', type: 'date', value: oc.fechaUltimaPublicacion, disabled: lockClone });
+    html += '</div></fieldset>';
+
+    // 6. Proveedores / costes
+    html += '<fieldset class="section"><legend><span class="n">6</span> Proveedores / costes previstos</legend>' +
+      '<p class="hint" style="margin:8px 0 0;">Se complementa al final del proyecto, en el cierre.</p>' +
+      '<div id="cost-items-mount"></div></fieldset>';
+
+    // 7. Resumen operativo
+    html += '<fieldset class="section"><legend><span class="n">7</span> Resumen operativo</legend><div class="grid cols-2">';
+    html += fieldHtml({ id: 'f-contenido', label: 'Contenido', span: 2, el: '<textarea id="f-contenido" ' + (!canEditPrevisto ? 'disabled' : '') + ' placeholder="p. ej. 2 reels y 1 publicación">' + escapeHtml(oc.contenido) + '</textarea>' });
+    html += '</div></fieldset>';
+
+    // 8. Checklist legal
+    html += '<fieldset class="section"><legend><span class="n">8</span> Checklist legal</legend><div class="grid cols-4">';
+    html += fieldHtml({ id: 'l1', label: 'NDA marca', el: sinoSelect('f-ndaMarca', oc.ndaMarca, lockClone) });
+    html += fieldHtml({ id: 'l2', label: 'NDA talentos', el: sinoSelect('f-ndaTalentos', oc.ndaTalentos, lockClone) });
+    html += fieldHtml({ id: 'l3', label: 'Uso de marca autorizado', el: sinoSelect('f-usoMarca', oc.usoMarca, lockClone) });
+    html += fieldHtml({ id: 'l4', label: 'Riesgos / advertencias', el: sinoSelect('f-riesgos', oc.riesgos, lockClone) });
+    html += '</div></fieldset>';
+
+    if (canEditPrevisto) {
+      html += '<div class="form-actions"><span class="form-status" id="form-status"></span>' +
+        '<button type="submit" class="btn accent" id="btn-guardar">' + (isEdit ? 'Guardar cambios' : 'Guardar OC') + '</button></div>';
+    }
+    html += '</form>';
+
+    // 9. Cierre (Ángel only, existing OC only, no tiene sentido sobre una OC cancelada)
+    if (isAdmin && isEdit && !cancelled) {
+      html += renderCierreSection(oc, closed);
+    }
+
+    mount.innerHTML = html;
+    wireForm(oc, canEditPrevisto);
+    renderCostItems(oc.costes, canEditPrevisto);
+    if (isAdmin && isEdit && !cancelled) wireCierre(oc);
+
+    var cloneSearch = document.getElementById('clone-search');
+    if (cloneSearch) {
+      renderCloneResults('');
+      cloneSearch.addEventListener('input', function () { renderCloneResults(cloneSearch.value); });
+    }
+    var quitarCloneBtn = document.getElementById('btn-quitar-clone');
+    if (quitarCloneBtn) quitarCloneBtn.addEventListener('click', function () {
+      state.formOc = newEmptyOc();
+      state.cloneNotice = '';
+      state.formIsClone = false;
+      renderForm();
+    });
+    var cerrarSaveNoticeBtn = document.getElementById('btn-cerrar-save-notice');
+    if (cerrarSaveNoticeBtn) cerrarSaveNoticeBtn.addEventListener('click', function () {
+      state.saveNotice = '';
+      renderForm();
+    });
+
+    var back = document.getElementById('btn-back-matriz');
+    if (back) back.addEventListener('click', function () { switchTab('matriz'); renderRoute(); });
+
+    var billingSel = document.getElementById('hdr-estadoFacturacion');
+    if (billingSel && state.editingId) {
+      billingSel.addEventListener('change', function () {
+        var v = billingSel.value;
+        state.formOc.estadoFacturacion = v;
+        updateOc(state.editingId, { estadoFacturacion: v });
+      });
+    }
+
+    var cancelarBtn = document.getElementById('btn-cancelar-oc');
+    if (cancelarBtn) cancelarBtn.addEventListener('click', function () {
+      if (!window.confirm('¿Seguro que quieres cancelar esta OC? Dejará de contar en la Matriz, el Dashboard y los Objetivos.')) return;
+      var motivo = window.prompt('Motivo de la cancelación (opcional):', '') || '';
+      var patch = { estadoOC: 'cancelada', motivoCancelacion: motivo, canceladaPor: state.identity, canceladaAt: new Date().toISOString() };
+      state.formOc = Object.assign({}, state.formOc, patch);
+      updateOc(state.editingId, patch);
+      renderForm();
+    });
+    var reactivarBtn2 = document.getElementById('btn-reactivar-oc');
+    if (reactivarBtn2) reactivarBtn2.addEventListener('click', function () {
+      var patch = { estadoOC: 'revision' };
+      state.formOc = Object.assign({}, state.formOc, patch);
+      updateOc(state.editingId, patch);
+      renderForm();
+    });
+  }
+
+  function wireForm(oc, canEdit) {
+    var depSel = document.getElementById('f-departamento');
+    var presu = document.getElementById('f-presupuesto');
+    var ocInternoEl = document.getElementById('f-ocInterno');
+    var ingresosEl = document.getElementById('f-ingresosPrevisto');
+    var costesEl = document.getElementById('f-costesPrevisto');
+    var tieneFiscalesEl = document.getElementById('f-tieneFiscales');
+
+    function recalc() {
+      var ing = Number(ingresosEl.value) || 0, cos = Number(costesEl.value) || 0;
+      document.getElementById('calc-margenPrevisto').value = fmtEUR(ing - cos);
+      document.getElementById('calc-rentPrevisto').value = fmtPct(rentPct(ing, cos));
+      document.getElementById('calc-horasPrevistas').value = ((ing - cos) / 100).toFixed(1);
+      document.getElementById('calc-importeVendido').value = fmtEUR(ing);
+    }
+    if (depSel) depSel.addEventListener('change', function () { document.getElementById('calc-responsable').value = deptByKey(depSel.value).responsable; });
+    if (presu && canEdit) presu.addEventListener('input', function () { ocInternoEl.value = generateOcInterno(presu.value); });
+    if (ingresosEl) ingresosEl.addEventListener('input', recalc);
+    if (costesEl) costesEl.addEventListener('input', recalc);
+    if (tieneFiscalesEl) tieneFiscalesEl.addEventListener('change', function () {
+      document.getElementById('fiscales-subgrid').classList.toggle('open', tieneFiscalesEl.value === 'SI');
+    });
+
+    var form = document.getElementById('oc-form');
+    if (form) form.addEventListener('submit', function (e) { e.preventDefault(); submitForm(oc); });
+  }
+
+  function readFormCostItemsFromDom() {
+    var rows = document.querySelectorAll('#cost-items-mount .cost-row');
+    var items = [];
+    rows.forEach(function (r) {
+      items.push({
+        id: r.getAttribute('data-id'),
+        categoria: r.getAttribute('data-cat'),
+        info: r.querySelector('.ci-info').value,
+        coste: Number(r.querySelector('.ci-coste').value) || 0,
+        origen: 'previsto',
+        estadoRevision: r.getAttribute('data-rev') || 'pendiente',
+        costeFinal: Number(r.getAttribute('data-final')) || 0
+      });
+    });
+    return items;
+  }
+
+  function renderCostItems(items, canEdit) {
+    var mount = document.getElementById('cost-items-mount');
+    if (!mount) return;
+    var html = '';
+    COST_CATS.forEach(function (cat) {
+      var rows = (items || []).filter(function (i) { return i.categoria === cat.key; });
+      html += '<div class="cost-cat"><h4>' + cat.label + '</h4><div class="cost-rows">';
+      rows.forEach(function (it) {
+        html += costRowHtml(it, canEdit);
+      });
+      html += '</div>' + (canEdit ? '<button type="button" class="add-cost-row" data-addcat="' + cat.key + '" style="margin-top:8px;">+ Añadir ' + cat.label.toLowerCase() + '</button>' : '') + '</div>';
+    });
+    mount.innerHTML = html;
+
+    if (!canEdit) return;
+    mount.querySelectorAll('.add-cost-row').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var current = readFormCostItemsFromDom();
+        current.push({ id: uid(), categoria: btn.getAttribute('data-addcat'), info: '', coste: 0, origen: 'previsto' });
+        state.formOc.costes = current;
+        renderCostItems(current, canEdit);
+      });
+    });
+    mount.querySelectorAll('.rm').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var current = readFormCostItemsFromDom().filter(function (i) { return i.id !== btn.getAttribute('data-rm'); });
+        state.formOc.costes = current;
+        renderCostItems(current, canEdit);
+      });
+    });
+  }
+  function costRowHtml(it, canEdit) {
+    return '<div class="cost-row" data-id="' + it.id + '" data-cat="' + it.categoria + '">' +
+      '<input class="ci-info" type="text" placeholder="Detalle (p. ej. Fee Pepito Grillo)" value="' + escapeHtml(it.info) + '" ' + (canEdit ? '' : 'disabled') + '>' +
+      '<input class="ci-coste" type="number" min="0" step="0.01" placeholder="€" value="' + (it.coste || '') + '" ' + (canEdit ? '' : 'disabled') + '>' +
+      (canEdit ? '<button type="button" class="rm" data-rm="' + it.id + '">Eliminar</button>' : '<span></span>') +
+      '</div>';
+  }
+
+  function submitForm(oc) {
+    var current = readFormCostItemsFromDom();
+    var payload = {
+      tieneFiscales: document.getElementById('f-tieneFiscales').value,
+      nombreSocial: val('f-nombreSocial'), cif: val('f-cif'), direccion: val('f-direccion'),
+      contactoComercial: val('f-contactoComercial'), contactoFacturacion: val('f-contactoFacturacion'),
+      proyecto: val('f-proyecto'), clienteComercial: val('f-clienteComercial'),
+      presupuesto: val('f-presupuesto'), ocInterno: document.getElementById('f-ocInterno').value || generateOcInterno(val('f-presupuesto')),
+      fechaLead: val('f-fechaLead'), fechaCampana: val('f-fechaCampana'),
+      departamento: document.getElementById('f-departamento').value,
+      ejecutivo: selVal('f-ejecutivo'), asistente1: selVal('f-asistente1'), asistente2: selVal('f-asistente2'), diseno: selVal('f-diseno'),
+      comentarios: val('f-comentarios'),
+      ingresosPrevisto: Number(val('f-ingresosPrevisto')) || 0,
+      costesPrevisto: Number(val('f-costesPrevisto')) || 0,
+      condicionesPago: val('f-condicionesPago'), poCliente: val('f-poCliente'), acuerdoLink: val('f-acuerdoLink'),
+      detallesFacturacion: val('f-detallesFacturacion'), fechaUltimaPublicacion: val('f-fechaUltimaPublicacion'),
+      costes: current,
+      contenido: val('f-contenido'),
+      ndaMarca: document.getElementById('f-ndaMarca').value, ndaTalentos: document.getElementById('f-ndaTalentos').value,
+      usoMarca: document.getElementById('f-usoMarca').value, riesgos: document.getElementById('f-riesgos').value,
+      updatedAt: new Date().toISOString()
+    };
+    function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+    function selVal(id) { var v = document.getElementById(id).value; return v === '—' ? '' : v; }
+
+    var btn = document.getElementById('btn-guardar');
+    btn.disabled = true;
+    document.getElementById('form-status').textContent = 'Guardando…';
+
+    if (state.editingId) {
+      updateOc(state.editingId, payload).then(function () {
+        document.getElementById('form-status').textContent = 'Cambios guardados ✓';
+        btn.disabled = false;
+      }).catch(function (err) { document.getElementById('form-status').textContent = 'Error: ' + err.message; btn.disabled = false; });
+    } else {
+      payload.estadoOC = 'revision';
+      payload.estadoFacturacion = 'pendiente';
+      payload.datosFinales = null;
+      payload.createdBy = state.identity;
+      payload.createdAt = new Date().toISOString();
+      saveOc(payload).then(function () {
+        // OJO: renderRoute() de abajo reconstruye el #form-mount al instante (mismo tick, sin repintado
+        // de por medio), así que un texto puesto en #form-status aquí nunca llega a verse. Por eso la
+        // confirmación va a state.saveNotice, que renderForm() pinta como banner en el formulario ya en blanco.
+        state.saveNotice = 'OC "' + payload.ocInterno + '" guardada correctamente ✓ — ya está disponible en la Matriz' + (state.usingDb ? '.' : ' (guardado solo en este navegador: sin conexión con la base de datos compartida, ver aviso arriba).');
+        state.editingId = null; state.formOc = newEmptyOc(); state.cloneNotice = ''; state.formIsClone = false;
+        renderRoute();
+      }).catch(function (err) { document.getElementById('form-status').textContent = 'Error: ' + err.message; btn.disabled = false; });
+    }
+  }
+
+  /* ================= CIERRE section (Ángel) ================= */
+  function renderCierreSection(oc, closed) {
+    var df = oc.datosFinales || {};
+    var items = oc.costes || [];
+    var open = state.autoExpandCierre || closed;
+    var html = '<details class="collapsible angel-only" id="cierre-details" ' + (open ? 'open' : '') + '>' +
+      '<summary>Cierre de OC — datos finales <span class="angel-tag">Solo Ángel</span></summary>' +
+      '<div class="details-body">';
+
+    if (closed) {
+      html += '<div class="banner ok"><span>✓</span><span>Esta OC quedó <strong>cerrada</strong> el ' + (df.fechaCierre || '—') + '. Puedes actualizar los datos finales si hace falta.</span></div>';
+    } else {
+      html += '<div class="banner"><span>ℹ️</span><span>Revisa cada coste previsto y confirma los datos reales para cerrar esta OC.</span></div>';
+    }
+
+    html += '<div class="grid cols-2">';
+    html += fieldHtml({ id: 'c-ingresosFinal', label: 'Ingresos final (€)', type: 'number', min: 0, step: '0.01', value: df.ingresosFinal != null ? df.ingresosFinal : oc.ingresosPrevisto });
+    html += fieldHtml({ id: 'calc-costesFinal', label: 'Costes final (€) — suma revisada', readonly: true, computed: true, value: fmtEUR(sumCostItemsFinal(items)) });
+    html += fieldHtml({ id: 'calc-margenFinal', label: 'Margen final (€)', readonly: true, computed: true, value: fmtEUR((df.ingresosFinal != null ? df.ingresosFinal : oc.ingresosPrevisto) - sumCostItemsFinal(items)) });
+    html += fieldHtml({ id: 'calc-rentFinal', label: 'Rentabilidad final (%)', readonly: true, computed: true, value: fmtPct(rentPct(df.ingresosFinal != null ? df.ingresosFinal : oc.ingresosPrevisto, sumCostItemsFinal(items))) });
+    html += '</div>';
+
+    html += '<div id="cierre-deviation"></div>';
+
+    html += '<div><strong style="font-size:13px;">Revisión de costes previstos</strong><div id="cierre-items-mount" style="margin-top:8px;"></div>' +
+      '<button type="button" class="add-cost-row" id="btn-add-cierre-item" style="margin-top:8px;">+ Añadir coste no previsto</button></div>';
+
+    html += '<div><strong style="font-size:13px;">Horas final</strong><div class="grid cols-5" style="margin-top:8px;">';
+    html += fieldHtml({ id: 'c-horasResponsable', label: 'Responsable (' + deptByKey(oc.departamento).responsable + ')', type: 'number', min: 0, step: '0.5', value: (df.horasFinal && df.horasFinal.responsable) || 0 });
+    html += fieldHtml({ id: 'c-horasEjecutivo', label: 'Ejecutivo/a (' + (oc.ejecutivo || '—') + ')', type: 'number', min: 0, step: '0.5', value: (df.horasFinal && df.horasFinal.ejecutivo) || 0 });
+    html += fieldHtml({ id: 'c-horasAsistente1', label: 'Asistente 1 (' + (oc.asistente1 || '—') + ')', type: 'number', min: 0, step: '0.5', value: (df.horasFinal && df.horasFinal.asistente1) || 0 });
+    html += fieldHtml({ id: 'c-horasAsistente2', label: 'Asistente 2 (' + (oc.asistente2 || '—') + ')', type: 'number', min: 0, step: '0.5', value: (df.horasFinal && df.horasFinal.asistente2) || 0 });
+    html += fieldHtml({ id: 'c-horasDiseno', label: 'Diseño (' + (oc.diseno || '—') + ')', type: 'number', min: 0, step: '0.5', value: (df.horasFinal && df.horasFinal.diseno) || 0 });
+    html += '</div><div class="grid cols-2" style="margin-top:10px;">';
+    html += fieldHtml({ id: 'calc-horasTotalFinal', label: 'Total horas final', readonly: true, computed: true, value: (df.horasFinal && df.horasFinal.total) || 0 });
+    html += fieldHtml({ id: 'c-fechaCierre', label: 'Fecha de cierre', type: 'date', value: df.fechaCierre || todayISO() });
+    html += '</div></div>';
+
+    html += '<div class="form-actions">' +
+      (closed ? '<button type="button" class="btn ghost sm" id="btn-reabrir">Reabrir OC</button>' : '<span></span>') +
+      '<button type="button" class="btn primary" id="btn-cerrar-oc">' + (closed ? 'Actualizar cierre' : 'Confirmar cierre → OC cerrada') + '</button></div>';
+
+    html += '</div></details>';
+    return html;
+  }
+
+  function wireCierre(oc) {
+    var items = oc.costes || [];
+    renderCierreItems(items);
+    updateDeviationBanner(items, oc);
+
+    var ingresosFinalEl = document.getElementById('c-ingresosFinal');
+    ingresosFinalEl.addEventListener('input', function () { recalcFinalTotals(oc); });
+
+    document.getElementById('btn-add-cierre-item').addEventListener('click', function () {
+      var current = readCierreItemsFromDom();
+      current.push({ id: uid(), categoria: 'otros', info: '', coste: 0, origen: 'cierre', estadoRevision: 'ok', costeFinal: 0 });
+      oc.costes = current;
+      renderCierreItems(current);
+      recalcFinalTotals(oc);
+    });
+
+    ['c-horasResponsable', 'c-horasEjecutivo', 'c-horasAsistente1', 'c-horasAsistente2', 'c-horasDiseno'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('input', recalcHorasTotal);
+    });
+    recalcHorasTotal();
+
+    var reabrirBtn = document.getElementById('btn-reabrir');
+    if (reabrirBtn) reabrirBtn.addEventListener('click', function () {
+      var patch = { estadoOC: 'revision' };
+      state.formOc = Object.assign({}, state.formOc, patch);
+      updateOc(oc.id, patch);
+      renderForm();
+    });
+
+    document.getElementById('btn-cerrar-oc').addEventListener('click', function () {
+      var finalItems = readCierreItemsFromDom();
+      var costesFinal = sumCostItemsFinal(finalItems);
+      var ingresosFinal = Number(document.getElementById('c-ingresosFinal').value) || 0;
+      var patch = {
+        costes: finalItems,
+        estadoOC: 'cerrada',
+        datosFinales: {
+          ingresosFinal: ingresosFinal,
+          costesFinal: costesFinal,
+          margenFinal: ingresosFinal - costesFinal,
+          rentabilidadFinal: rentPct(ingresosFinal, costesFinal),
+          horasFinal: {
+            responsable: Number(document.getElementById('c-horasResponsable').value) || 0,
+            ejecutivo: Number(document.getElementById('c-horasEjecutivo').value) || 0,
+            asistente1: Number(document.getElementById('c-horasAsistente1').value) || 0,
+            asistente2: Number(document.getElementById('c-horasAsistente2').value) || 0,
+            diseno: Number(document.getElementById('c-horasDiseno').value) || 0,
+            total: Number(document.getElementById('calc-horasTotalFinal').value) || 0
+          },
+          fechaCierre: document.getElementById('c-fechaCierre').value || todayISO()
+        }
+      };
+      state.formOc = Object.assign({}, state.formOc, patch);
+      state.autoExpandCierre = true;
+      updateOc(oc.id, patch);
+      renderForm();
+    });
+  }
+
+  function recalcHorasTotal() {
+    var t = ['c-horasResponsable', 'c-horasEjecutivo', 'c-horasAsistente1', 'c-horasAsistente2', 'c-horasDiseno'].reduce(function (a, id) {
+      var el = document.getElementById(id); return a + (el ? Number(el.value) || 0 : 0);
+    }, 0);
+    var out = document.getElementById('calc-horasTotalFinal');
+    if (out) out.value = t;
+  }
+
+  function readCierreItemsFromDom() {
+    var rows = document.querySelectorAll('#cierre-items-mount .final-row');
+    var items = [];
+    rows.forEach(function (r) {
+      items.push({
+        id: r.getAttribute('data-id'),
+        categoria: r.getAttribute('data-cat'),
+        info: r.querySelector('.fi-info') ? r.querySelector('.fi-info').value : (r.getAttribute('data-info') || ''),
+        coste: Number(r.getAttribute('data-coste')) || 0,
+        origen: r.getAttribute('data-origen'),
+        estadoRevision: r.querySelector('.fi-status').value,
+        costeFinal: Number(r.querySelector('.fi-amt') ? r.querySelector('.fi-amt').value : r.getAttribute('data-coste')) || 0
+      });
+    });
+    return items;
+  }
+
+  function renderCierreItems(items) {
+    var mount = document.getElementById('cierre-items-mount');
+    if (!mount) return;
+    if (!items.length) { mount.innerHTML = '<p class="hint">No hay costes previstos registrados. Puedes añadir los reales abajo.</p>'; return; }
+    var html = '';
+    items.forEach(function (it) {
+      var isNuevo = it.origen === 'cierre';
+      var cat = COST_CATS.filter(function (c) { return c.key === it.categoria; })[0] || { label: it.categoria };
+      html += '<div class="final-row" data-id="' + it.id + '" data-cat="' + it.categoria + '" data-origen="' + it.origen + '" data-coste="' + (it.coste || 0) + '" data-info="' + escapeHtml(it.info) + '">';
+      if (isNuevo) {
+        html += '<input class="fi-info" type="text" placeholder="Detalle del coste" value="' + escapeHtml(it.info) + '">';
+      } else {
+        html += '<span>' + escapeHtml(it.info || '(sin detalle)') + ' <span class="hint">· ' + cat.label + '</span></span>';
+      }
+      html += '<span class="amt">' + (isNuevo ? '—' : fmtEUR(it.coste)) + '</span>';
+      html += '<select class="fi-status">' +
+        ['ok', 'modificado', 'eliminado'].map(function (s) {
+          var lbl = s === 'ok' ? 'OK' : (s === 'modificado' ? 'Modificar' : 'Eliminar');
+          return '<option value="' + s + '"' + ((it.estadoRevision || (isNuevo ? 'ok' : 'ok')) === s ? ' selected' : '') + '>' + lbl + '</option>';
+        }).join('') + '</select>';
+      html += '<input class="fi-amt mod-amt" type="number" step="0.01" value="' + (it.costeFinal || it.coste || 0) + '" style="' + ((it.estadoRevision === 'modificado' || isNuevo) ? '' : 'display:none;') + '">';
+      html += '</div>';
+    });
+    mount.innerHTML = html;
+
+    mount.querySelectorAll('.fi-status').forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        var row = sel.closest('.final-row');
+        var amtInput = row.querySelector('.fi-amt');
+        amtInput.style.display = (sel.value === 'modificado' || row.getAttribute('data-origen') === 'cierre') ? '' : 'none';
+        syncCierreRecalc();
+      });
+    });
+    mount.querySelectorAll('.fi-amt, .fi-info').forEach(function (inp) { inp.addEventListener('input', syncCierreRecalc); });
+  }
+
+  function syncCierreRecalc() {
+    var oc = state.formOc;
+    if (!oc) return;
+    var items = readCierreItemsFromDom();
+    oc.costes = items;
+    recalcFinalTotals(oc);
+  }
+  function recalcFinalTotals(oc) {
+    var items = readCierreItemsFromDom();
+    var costesFinal = sumCostItemsFinal(items);
+    var ingresosFinal = Number(document.getElementById('c-ingresosFinal').value) || 0;
+    document.getElementById('calc-costesFinal').value = fmtEUR(costesFinal);
+    document.getElementById('calc-margenFinal').value = fmtEUR(ingresosFinal - costesFinal);
+    document.getElementById('calc-rentFinal').value = fmtPct(rentPct(ingresosFinal, costesFinal));
+    updateDeviationBanner(items, oc);
+  }
+  function updateDeviationBanner(items, oc) {
+    var el = document.getElementById('cierre-deviation');
+    if (!el) return;
+    var previstoTotal = Number(oc.costesPrevisto) || 0;
+    var finalTotal = sumCostItemsFinal(items);
+    if (previstoTotal <= 0) { el.innerHTML = ''; return; }
+    var dev = ((finalTotal - previstoTotal) / previstoTotal) * 100;
+    if (Math.abs(dev) > 10) {
+      el.innerHTML = '<div class="banner"><span>⚠️</span><span>Los costes finales están un <strong>' + Math.abs(dev).toFixed(0) + '% ' + (dev > 0 ? 'por encima' : 'por debajo') + '</strong> de lo previsto (' + fmtEUR(previstoTotal) + ') — conviene revisarlo.</span></div>';
+    } else {
+      el.innerHTML = '<div class="banner ok"><span>✓</span><span>Los costes finales están en línea con lo previsto (' + fmtEUR(previstoTotal) + ').</span></div>';
+    }
+  }
+
+  /* ================= MATRIZ ================= */
+  var mxInit = false;
+  function initMatrizToolbar() {
+    if (mxInit) return; mxInit = true;
+    var mxDeptSel = document.getElementById('mx-dept');
+    mxDeptSel.innerHTML = '<option value="all">Todos los departamentos</option>' + DEPARTMENTS.map(function (d) { return '<option value="' + d.key + '">' + d.short + '</option>'; }).join('');
+    mxDeptSel.addEventListener('change', function () { state.matrizDept = mxDeptSel.value; renderMatriz(); });
+    var mxMonthSel = document.getElementById('mx-month');
+    mxMonthSel.innerHTML = '<option value="all">Todos los meses</option>' + MESES_LARGO.map(function (m, i) {
+      var mm = String(i + 1).padStart(2, '0');
+      return '<option value="' + mm + '">' + (m.charAt(0).toUpperCase() + m.slice(1)) + '</option>';
+    }).join('');
+    mxMonthSel.addEventListener('change', function () { state.matrizMonth = mxMonthSel.value; renderMatriz(); });
+    document.getElementById('mx-estado').addEventListener('change', function (e) { state.matrizEstado = e.target.value; renderMatriz(); });
+    document.getElementById('mx-search').addEventListener('input', function (e) { state.matrizQuery = e.target.value.toLowerCase(); renderMatriz(); });
+    document.getElementById('mx-year').addEventListener('change', function (e) { state.matrizYear = Number(e.target.value); renderMatriz(); });
+  }
+  var dashInit = false;
+  function initDashToolbar() {
+    if (dashInit) return; dashInit = true;
+    document.getElementById('dash-year').addEventListener('change', function (e) { state.dashYear = Number(e.target.value); renderDashboard(); });
+  }
+
+  function populateYearSelect(sel, current) {
+    var years = {}; getOcs().forEach(function (o) { years[yearOfMonth(o.fechaCampana || o.fechaLead)] = true; });
+    years[new Date().getFullYear()] = true;
+    var list = Object.keys(years).map(Number).sort(function (a, b) { return b - a; });
+    sel.innerHTML = list.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('');
+    sel.value = String(current);
+  }
+
+  function pillFacturacion(status) {
+    var s = BILLING[status] || BILLING.pendiente;
+    return '<span class="pill" style="background:color-mix(in srgb, ' + s.color + ' 16%, transparent); color:' + s.color + ';"><span class="dot" style="background:' + s.color + '"></span>' + s.label + '</span>';
+  }
+  function pillOC(status) {
+    if (status === 'cerrada') return '<span class="pill oc-cerrada">✓ Cerrada</span>';
+    if (status === 'cancelada') return '<span class="pill oc-cancelada">✕ Cancelada</span>';
+    return '<span class="pill oc-revision">En revisión</span>';
+  }
+  /** Quién puede cancelar una OC en revisión: Ángel cualquiera, el resto solo las que ha creado. */
+  function canCancelOc(oc) {
+    if (state.isViewer) return false;
+    if (isAdminIdentity()) return true;
+    return oc.createdBy === state.identity;
+  }
+
+  function renderMatriz() {
+    initMatrizToolbar();
+    var role = getRole();
+    document.getElementById('mx-dept').value = state.matrizDept;
+    document.getElementById('mx-month').value = state.matrizMonth;
+    document.getElementById('mx-estado').value = state.matrizEstado;
+    document.getElementById('matriz-year-label').textContent = state.matrizYear;
+    populateYearSelect(document.getElementById('mx-year'), state.matrizYear);
+
+    var body = document.getElementById('matriz-body');
+    var all = role === 'regular' ? getOcs().filter(function (o) { return o.createdBy === state.identity; }) : getOcs();
+    var q = state.matrizQuery;
+
+    var bannerHtml = state.matrizBanner ? '<div class="banner info" style="margin-bottom:2px;"><span>👋</span><span>' + state.matrizBanner + '</span></div>' : '';
+
+    // Suscripción en tiempo real caída o colgada sin avisar (nunca llega el primer snapshot ni el
+    // error callback): sin este aviso, la Matriz se queda congelada mostrando datos viejos —o
+    // "cargando"/"no hay OC" para siempre— sin que nadie se entere ni pueda hacer nada al respecto.
+    var connIssue = state.dbSubError || state.ocsLoadTimedOut;
+    var dbErrorBannerHtml = connIssue
+      ? '<div class="banner" style="margin-bottom:2px; background:var(--danger-bg); border-color:var(--danger); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">' +
+          '<span style="display:flex; gap:8px;"><span>⚠️</span><span><strong>Se perdió la conexión en tiempo real con la base de datos.</strong> Puede que no veas los últimos cambios del equipo. Los datos ya guardados siguen a salvo.</span></span>' +
+          '<span style="display:flex; gap:6px; flex-wrap:wrap;">' +
+            '<button type="button" class="btn ghost sm" id="btn-retry-ocs" style="white-space:nowrap;">Reintentar conexión</button>' +
+            '<button type="button" class="btn ghost sm" id="btn-reload-page-mx" style="white-space:nowrap;">Recargar página</button>' +
+          '</span>' +
+        '</div>'
+      : '';
+    function wireRetryOcsBtn() {
+      var btn = document.getElementById('btn-retry-ocs');
+      if (btn) btn.addEventListener('click', function () {
+        state.dbSubError = null;
+        state.ocsLoadTimedOut = false;
+        subscribeOcs();
+        renderMatriz();
+        renderDashboard();
+      });
+      var reloadBtn = document.getElementById('btn-reload-page-mx');
+      if (reloadBtn) reloadBtn.addEventListener('click', function () { location.reload(); });
+      var reloadBtn2 = document.getElementById('btn-reload-page-loading');
+      if (reloadBtn2) reloadBtn2.addEventListener('click', function () { location.reload(); });
+    }
+
+    var filtered = all.filter(function (o) {
+      var refM = o.fechaCampana || o.fechaLead;
+      if (yearOfMonth(refM) !== Number(state.matrizYear)) return false;
+      if (state.matrizMonth !== 'all' && monthIdxOfMonth(refM) !== (Number(state.matrizMonth) - 1)) return false;
+      if (state.matrizDept !== 'all' && o.departamento !== state.matrizDept) return false;
+      if (state.matrizEstado !== 'all' && o.estadoOC !== state.matrizEstado) return false;
+      if (q && !((o.clienteComercial || '').toLowerCase().indexOf(q) > -1 || (o.proyecto || '').toLowerCase().indexOf(q) > -1)) return false;
+      return true;
+    });
+
+    if (!all.length) {
+      var emptyHtml;
+      if (state.usingDb && connIssue) {
+        emptyHtml = '<div class="empty-state"><h3>No se ha podido cargar la Matriz</h3><p>Hubo un problema de conexión con la base de datos compartida. Si acabas de guardar una OC, no se ha perdido — reintenta la conexión o recarga la página (arriba) para volver a verla.</p></div>';
+      } else if (state.usingDb && !state.ocsLoaded) {
+        emptyHtml = '<div class="empty-state"><h3>Cargando OC…</h3><p>Conectando con la base de datos compartida. Si tarda más de unos segundos, prueba a recargar.</p>' +
+          '<button type="button" class="btn ghost sm" id="btn-reload-page-loading" style="margin-top:8px;">Recargar página</button></div>';
+      } else {
+        emptyHtml = '<div class="empty-state"><h3>' + (role === 'regular' ? 'Todavía no has creado ninguna OC' : 'Todavía no hay ninguna OC') + '</h3><p>' +
+          (role === 'regular' ? 'En cuanto guardes una OC desde «Nueva OC», aparecerá aquí.' : 'En cuanto se guarde la primera OC desde «Nueva OC», aparecerá aquí agrupada por departamento y mes de campaña.') + '</p></div>';
+      }
+      body.innerHTML = dbErrorBannerHtml + bannerHtml + emptyHtml;
+      wireRetryOcsBtn();
+      return;
+    }
+
+    if (role === 'regular') { body.innerHTML = dbErrorBannerHtml + bannerHtml + renderMatrizSimplified(filtered); wireRetryOcsBtn(); wireMatrizRows(body); return; }
+
+    var deptsToShow = state.matrizDept === 'all' ? DEPARTMENTS : DEPARTMENTS.filter(function (d) { return d.key === state.matrizDept; });
+    var grandFact = 0, grandBen = 0;
+    var html = dbErrorBannerHtml + bannerHtml;
+
+    deptsToShow.forEach(function (d) {
+      var rows = filtered.filter(function (o) { return o.departamento === d.key; }).sort(function (a, b) {
+        return (a.fechaCampana || a.fechaLead || '').localeCompare(b.fechaCampana || b.fechaLead || '');
+      });
+      var subFact = 0, subBen = 0;
+      var rowsHtml = rows.map(function (o) {
+        var c = computeRow(o);
+        var isCancel = o.estadoOC === 'cancelada';
+        var isPending = !!o._pending;
+        if (!isCancel) { subFact += c.facturacion; subBen += c.beneficio; grandFact += c.facturacion; grandBen += c.beneficio; }
+        var factCell = (role === 'admin')
+          ? '<select class="mx-fact-inline" data-id="' + o.id + '"' + (isPending ? ' disabled' : '') + '>' + Object.keys(BILLING).map(function (k) {
+              return '<option value="' + k + '"' + (o.estadoFacturacion === k ? ' selected' : '') + '>' + BILLING[k].label + '</option>';
+            }).join('') + '</select>'
+          : pillFacturacion(o.estadoFacturacion);
+        return '<tr class="row' + (isCancel ? ' row-cancelada' : '') + (isPending ? ' row-pending' : '') + '" data-id="' + o.id + '">' +
+          '<td>' + fmtMonth(c.refMonth) + '</td>' +
+          '<td class="oc-code">' + (o.ocInterno ? escapeHtml(o.ocInterno) : '<span class="hint" style="margin:0;">(sin código)</span>') + (isPending ? ' <span class="hint" style="margin:0;">(guardando…)</span>' : '') + '</td>' +
+          '<td>' + escapeHtml(deptByKey(o.departamento).responsable) + (o.ejecutivo ? ' · ' + escapeHtml(o.ejecutivo) : '') + '</td>' +
+          '<td>' + (o.clienteComercial ? escapeHtml(o.clienteComercial) : '<span class="hint" style="margin:0;">(sin cliente)</span>') + '</td>' +
+          '<td>' + (o.proyecto ? escapeHtml(o.proyecto) : '<span class="hint" style="margin:0;">(sin proyecto)</span>') + '</td>' +
+          '<td class="num">' + (isCancel ? '—' : fmtEUR(c.facturacion)) + '</td>' +
+          '<td class="num">' + (isCancel ? '—' : fmtEUR(c.beneficio)) + '</td>' +
+          '<td class="num">' + (isCancel ? '—' : fmtPct(c.rentabilidad)) + '</td>' +
+          '<td>' + factCell + '</td>' +
+          '<td>' + pillOC(o.estadoOC) + '</td></tr>';
+      }).join('');
+
+      html += '<div class="dept-group" style="margin-bottom:20px;">' +
+        '<div class="dept-head"><span class="dept-chip" style="background:' + d.color + '"></span><h3>' + d.short + '</h3><span class="count">' + rows.length + ' OC</span>' +
+        '<div class="dept-totals"><span>Facturación <b>' + fmtEUR(subFact) + '</b></span><span>Beneficio <b>' + fmtEUR(subBen) + '</b></span></div></div>' +
+        '<div class="table-wrap"><table class="matrix"><thead><tr>' +
+        '<th>Campaña</th><th>OC interno</th><th>Responsable</th><th>Cliente</th><th>Proyecto</th>' +
+        '<th class="num">Facturación</th><th class="num">Beneficio</th><th class="num">Rentabilidad</th><th>Estado facturación</th><th>Estado OC</th>' +
+        '</tr></thead><tbody>' +
+        (rowsHtml || '<tr><td colspan="10" style="color:var(--ink-mute); font-style:italic;">Sin OC en este periodo</td></tr>') +
+        (rows.length ? '<tr class="subtotal"><td colspan="5">Total ' + d.short + '</td><td class="num">' + fmtEUR(subFact) + '</td><td class="num">' + fmtEUR(subBen) + '</td><td colspan="3"></td></tr>' : '') +
+        '</tbody></table></div></div>';
+    });
+
+    if (deptsToShow.length > 1) {
+      html += '<div class="table-wrap" style="border-top:1px solid var(--border);"><table class="matrix"><tbody>' +
+        '<tr class="grand"><td colspan="5">Resultado ' + state.matrizYear + '</td><td class="num">' + fmtEUR(grandFact) + '</td><td class="num">' + fmtEUR(grandBen) + '</td><td colspan="3"></td></tr>' +
+        '</tbody></table></div>';
+    }
+
+    body.innerHTML = html;
+    wireRetryOcsBtn();
+    wireMatrizRows(body);
+  }
+
+  function wireMatrizRows(root) {
+    root.querySelectorAll('tr.row').forEach(function (tr) {
+      if (tr.classList.contains('row-pending')) return; // aún no tiene id real: se abrirá en cuanto confirme el guardado.
+      tr.addEventListener('click', function () { openForEdit(tr.getAttribute('data-id')); });
+    });
+    // Portal de revisión: en la Matriz de Ángel, el estado de facturación se cambia in situ sin abrir la OC.
+    root.querySelectorAll('select.mx-fact-inline').forEach(function (sel) {
+      sel.addEventListener('mousedown', function (e) { e.stopPropagation(); });
+      sel.addEventListener('click', function (e) { e.stopPropagation(); });
+      sel.addEventListener('change', function (e) {
+        e.stopPropagation();
+        updateOc(sel.getAttribute('data-id'), { estadoFacturacion: sel.value });
+      });
+    });
+  }
+
+  /** Vista plana para el equipo (no admin/viewer): solo sus propias OC, sin agrupar por
+   *  departamento y sin columnas de beneficio/rentabilidad (esas quedan para Matriz/Dashboard). */
+  function renderMatrizSimplified(rows) {
+    rows = rows.slice().sort(function (a, b) { return (b.fechaCampana || b.fechaLead || '').localeCompare(a.fechaCampana || a.fechaLead || ''); });
+    var rowsHtml = rows.map(function (o) {
+      var c = computeRow(o);
+      var isCancel = o.estadoOC === 'cancelada';
+      var isPending = !!o._pending;
+      return '<tr class="row' + (isCancel ? ' row-cancelada' : '') + (isPending ? ' row-pending' : '') + '" data-id="' + o.id + '">' +
+        '<td>' + fmtMonth(c.refMonth) + '</td>' +
+        '<td class="oc-code">' + (o.ocInterno ? escapeHtml(o.ocInterno) : '<span class="hint" style="margin:0;">(sin código)</span>') + (isPending ? ' <span class="hint" style="margin:0;">(guardando…)</span>' : '') + '</td>' +
+        '<td>' + (o.clienteComercial ? escapeHtml(o.clienteComercial) : '<span class="hint" style="margin:0;">(sin cliente)</span>') + '</td>' +
+        '<td>' + (o.proyecto ? escapeHtml(o.proyecto) : '<span class="hint" style="margin:0;">(sin proyecto)</span>') + '</td>' +
+        '<td class="num">' + (isCancel ? '—' : fmtEUR(c.facturacion)) + '</td>' +
+        '<td>' + pillFacturacion(o.estadoFacturacion) + '</td>' +
+        '<td>' + pillOC(o.estadoOC) + '</td></tr>';
+    }).join('');
+    return '<div class="table-wrap" style="border-top:1px solid var(--border); border-radius:var(--radius);"><table class="matrix"><thead><tr>' +
+      '<th>Campaña</th><th>OC interno</th><th>Cliente</th><th>Proyecto</th><th class="num">Facturación</th><th>Estado facturación</th><th>Estado OC</th>' +
+      '</tr></thead><tbody>' + (rowsHtml || '<tr><td colspan="7" style="color:var(--ink-mute); font-style:italic;">Sin OC en este periodo</td></tr>') + '</tbody></table></div>';
+  }
+
+  /* ================= DASHBOARD ================= */
+  function renderDashboard() {
+    initDashToolbar();
+    var role = getRole();
+    var deptFilter = role === 'regular' ? deptOfIdentity(state.identity) : null;
+    if (role === 'regular' && !deptFilter) {
+      // Nadie del equipo debería llegar aquí sin departamento asignado, pero por seguridad no mostramos nada.
+      document.getElementById('dash-stats').innerHTML = '';
+      document.getElementById('chart-dept').innerHTML = '';
+      document.getElementById('chart-month').innerHTML = '';
+      document.getElementById('chart-status').innerHTML = '';
+      document.getElementById('dash-objetivos').innerHTML = '';
+      return;
+    }
+    document.getElementById('dash-year-label').textContent = state.dashYear;
+    populateYearSelect(document.getElementById('dash-year'), state.dashYear);
+    var yearOcsAll = getOcs().filter(function (o) {
+      if (yearOfMonth(o.fechaCampana || o.fechaLead) !== Number(state.dashYear)) return false;
+      if (deptFilter && o.departamento !== deptFilter) return false;
+      return true;
+    });
+    // Las OC canceladas no cuentan en ningún total (facturación, beneficio, gráficas), pero sí en el contador de estados.
+    var yearOcs = yearOcsAll.filter(function (o) { return o.estadoOC !== 'cancelada'; });
+    var totFact = 0, totBen = 0, cerradas = 0, revision = 0, canceladas = 0, rentSum = 0, rentCount = 0;
+    yearOcsAll.forEach(function (o) {
+      if (o.estadoOC === 'cancelada') { canceladas++; return; }
+      var c = computeRow(o);
+      totFact += c.facturacion; totBen += c.beneficio;
+      if (o.estadoOC === 'cerrada') cerradas++; else revision++;
+      if (c.facturacion > 0) { rentSum += c.rentabilidad; rentCount++; }
+    });
+    var rentMedia = rentCount ? rentSum / rentCount : 0;
+
+    document.getElementById('dash-stats').innerHTML = [
+      stat('Facturación total', fmtEUR(totFact)), stat('Beneficio estimado', fmtEUR(totBen)),
+      stat('Rentabilidad media', fmtPct(rentMedia)), stat('Cerradas / en revisión / canceladas', cerradas + ' / ' + revision + ' / ' + canceladas)
+    ].join('');
+    function stat(l, v) { return '<div class="stat-tile"><span class="label">' + l + '</span><span class="value">' + v + '</span></div>'; }
+
+    var deptChartCard = document.getElementById('card-chart-dept');
+    if (deptChartCard) deptChartCard.hidden = !!deptFilter;
+    if (!deptFilter) renderDeptChart(yearOcs);
+    renderMonthChart(yearOcs); renderStatusChart(yearOcs);
+    renderObjetivos(role, deptFilter);
+  }
+
+  /* ---- objetivos & cumplimiento: edición (solo Ángel) + tarjetas de cumplimiento por departamento ---- */
+  function cumplimientoColor(pct) {
+    if (pct >= 100) return 'var(--st-facturado)';
+    if (pct >= 60) return 'var(--accent)';
+    return 'var(--st-pendiente)';
+  }
+  function objProgressBar(pct, color) {
+    var w = Math.max(0, Math.min(100, pct));
+    return '<div class="obj-bar-track"><div class="obj-bar-fill" style="width:' + w + '%; background:' + color + ';"></div></div>';
+  }
+  function objDeptCard(row) {
+    var d = row.dept;
+    var colFact = cumplimientoColor(row.pctFact);
+    var colBen = cumplimientoColor(row.pctBen);
+    var monthlyRows = row.monthly.map(function (m, i) {
+      var pf = m.targetFact > 0 ? (m.fact / m.targetFact * 100) : 0;
+      var pb = m.targetBen > 0 ? (m.ben / m.targetBen * 100) : 0;
+      return '<tr><td>' + MESES[i] + '</td>' +
+        '<td class="num">' + fmtEUR(m.targetFact) + '</td><td class="num">' + fmtEUR(m.fact) + '</td><td class="num">' + fmtPct(pf) + '</td>' +
+        '<td class="num">' + fmtEUR(m.targetBen) + '</td><td class="num">' + fmtEUR(m.ben) + '</td><td class="num">' + fmtPct(pb) + '</td></tr>';
+    }).join('');
+    return '<div class="obj-dept-card">' +
+      '<div class="obj-dept-head"><span class="dept-chip" style="background:' + d.color + '"></span><h4>' + d.short + '</h4><span class="peso">Peso ' + row.peso + '%</span></div>' +
+      '<div class="obj-metrics">' +
+        '<div class="obj-metric"><span class="lab">Facturación</span>' +
+          '<div class="figures"><b>' + fmtEUR(row.realFact) + '</b><span>/ ' + fmtEUR(row.targetFactAnual) + '</span><span style="color:' + colFact + '; font-weight:700;">' + fmtPct(row.pctFact) + '</span></div>' +
+          objProgressBar(row.pctFact, colFact) +
+        '</div>' +
+        '<div class="obj-metric"><span class="lab">Beneficio</span>' +
+          '<div class="figures"><b>' + fmtEUR(row.realBen) + '</b><span>/ ' + fmtEUR(row.targetBenAnual) + '</span><span style="color:' + colBen + '; font-weight:700;">' + fmtPct(row.pctBen) + '</span></div>' +
+          objProgressBar(row.pctBen, colBen) +
+        '</div>' +
+      '</div>' +
+      '<details class="collapsible"><summary>Detalle mensual</summary><div class="details-body">' +
+      '<div class="table-wrap"><table class="matrix"><thead><tr><th>Mes</th><th class="num">Obj. facturación</th><th class="num">Real</th><th class="num">%</th><th class="num">Obj. beneficio</th><th class="num">Real</th><th class="num">%</th></tr></thead><tbody>' + monthlyRows + '</tbody></table></div>' +
+      '</div></details>' +
+    '</div>';
+  }
+  function objEditForm(year, obj) {
+    var sum = DEPARTMENTS.reduce(function (a, d) { return a + (obj.pesos[d.key] || 0); }, 0);
+    return '<details class="collapsible angel-only" id="obj-edit-details">' +
+      '<summary>Editar objetivos ' + year + ' <span class="angel-tag">Solo Ángel</span></summary>' +
+      '<div class="details-body">' +
+      '<p class="hint">El objetivo anual se reparte a partes iguales entre los 12 meses (prorrateo), y entre departamentos según su peso (%).</p>' +
+      '<div class="grid cols-2">' +
+        '<div class="field"><label for="obj-fact-input">Objetivo facturación anual (€)</label><input type="number" min="0" step="100" id="obj-fact-input" value="' + obj.facturacionAnual + '"></div>' +
+        '<div class="field"><label for="obj-ben-input">Objetivo beneficio anual (€)</label><input type="number" min="0" step="100" id="obj-ben-input" value="' + obj.beneficioAnual + '"></div>' +
+      '</div>' +
+      '<div class="obj-weights-grid">' + DEPARTMENTS.map(function (d) {
+        return '<div class="field"><label>' + d.short + ' — peso %</label><input type="number" min="0" max="100" step="1" class="obj-peso-input" data-key="' + d.key + '" value="' + obj.pesos[d.key] + '"></div>';
+      }).join('') + '</div>' +
+      '<div class="obj-weights-sum" id="obj-weights-sum">Suma de pesos: ' + sum + '%' + (sum !== 100 ? ' — debe sumar 100%' : ' ✓') + '</div>' +
+      '<div class="gate-actions" style="justify-content:flex-end;"><button type="button" class="btn primary" id="obj-save-btn">Guardar objetivos</button></div>' +
+      (state.objSaveMsg ? '<p class="hint" style="color:var(--st-facturado); font-weight:600;">' + escapeHtml(state.objSaveMsg) + '</p>' : '') +
+      '</div></details>';
+  }
+  function wireObjEditForm(year) {
+    var details = document.getElementById('obj-edit-details');
+    if (!details) return;
+    var sumEl = document.getElementById('obj-weights-sum');
+    function recomputeSum() {
+      var sum = 0;
+      document.querySelectorAll('.obj-peso-input').forEach(function (inp) { sum += Number(inp.value) || 0; });
+      sumEl.textContent = 'Suma de pesos: ' + sum + '%' + (sum !== 100 ? ' — debe sumar 100%' : ' ✓');
+      sumEl.classList.toggle('bad', sum !== 100);
+      return sum;
+    }
+    document.querySelectorAll('.obj-peso-input').forEach(function (inp) { inp.addEventListener('input', recomputeSum); });
+    document.getElementById('obj-save-btn').addEventListener('click', function () {
+      var pesos = {};
+      document.querySelectorAll('.obj-peso-input').forEach(function (inp) { pesos[inp.getAttribute('data-key')] = Number(inp.value) || 0; });
+      var data = {
+        facturacionAnual: Number(document.getElementById('obj-fact-input').value) || 0,
+        beneficioAnual: Number(document.getElementById('obj-ben-input').value) || 0,
+        pesos: pesos
+      };
+      saveObjetivo(year, data).then(function () {
+        state.objSaveMsg = 'Guardado.';
+        renderDashboard();
+        setTimeout(function () { state.objSaveMsg = ''; }, 2500);
+      });
+    });
+  }
+  function renderObjetivos(role, deptFilter) {
+    var root = document.getElementById('dash-objetivos');
+    if (!root) return;
+    var year = state.dashYear;
+    var obj = getObjetivo(year);
+    var rows = computeCumplimiento(year);
+    if (deptFilter) rows = rows.filter(function (r) { return r.dept.key === deptFilter; });
+
+    root.innerHTML = '<div class="card obj-card">' +
+      '<div><h3>Objetivos y cumplimiento</h3><span class="sub">Objetivo anual repartido a partes iguales entre los 12 meses, y por peso (%) entre departamentos.</span></div>' +
+      (role === 'admin' ? objEditForm(year, obj) : '') +
+      '<div class="obj-dept-list">' + rows.map(objDeptCard).join('') + '</div>' +
+      '</div>';
+    if (role === 'admin') wireObjEditForm(year);
+    if (state.autoOpenObjetivos) {
+      state.autoOpenObjetivos = false;
+      var det = document.getElementById('obj-edit-details');
+      if (det) det.open = true;
+      root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function renderDeptChart(yearOcs) {
+    var data = DEPARTMENTS.map(function (d) {
+      var sum = yearOcs.filter(function (o) { return o.departamento === d.key; }).reduce(function (a, o) { return a + computeRow(o).facturacion; }, 0);
+      return { label: d.short, value: sum, color: d.color };
+    });
+    var max = Math.max.apply(null, data.map(function (d) { return d.value; }).concat([1])) * 1.2;
+    var W = 440, H = 210, padL = 8, padR = 8, padT = 16, padB = 34;
+    var n = data.length, gap = (W - padL - padR) / n, barW = gap * 0.52;
+    var svg = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Facturación por departamento">';
+    [0.25, 0.5, 0.75, 1].forEach(function (f) { var y = padT + (H - padT - padB) * (1 - f); svg += '<line class="grid-line" x1="' + padL + '" x2="' + (W - padR) + '" y1="' + y + '" y2="' + y + '" />'; });
+    data.forEach(function (d, i) {
+      var x = padL + gap * i + (gap - barW) / 2, h = (H - padT - padB) * (d.value / max), y = H - padB - h;
+      svg += '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + Math.max(h, 1) + '" rx="4" fill="' + d.color + '"/>';
+      svg += '<text class="bar-label" x="' + (x + barW / 2) + '" y="' + (y - 6) + '" text-anchor="middle">' + fmtEUR(d.value) + '</text>';
+      svg += '<text class="axis-label" x="' + (x + barW / 2) + '" y="' + (H - padB + 16) + '" text-anchor="middle">' + d.label.split(' ')[0] + '</text>';
+    });
+    svg += '<line class="baseline" x1="' + padL + '" x2="' + (W - padR) + '" y1="' + (H - padB) + '" y2="' + (H - padB) + '" /></svg>';
+    document.getElementById('chart-dept').innerHTML = svg;
+  }
+
+  function renderMonthChart(yearOcs) {
+    var totals = new Array(12).fill(0);
+    yearOcs.forEach(function (o) { var mi = monthIdxOfMonth(o.fechaCampana || o.fechaLead); totals[mi] += computeRow(o).facturacion; });
+    var max = Math.max.apply(null, totals.concat([1])) * 1.2;
+    var W = 440, H = 210, padL = 8, padR = 8, padT = 16, padB = 26;
+    var gap = (W - padL - padR) / 12, barW = gap * 0.56;
+    var svg = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Evolución mensual de facturación">';
+    [0.25, 0.5, 0.75, 1].forEach(function (f) { var y = padT + (H - padT - padB) * (1 - f); svg += '<line class="grid-line" x1="' + padL + '" x2="' + (W - padR) + '" y1="' + y + '" y2="' + y + '" />'; });
+    totals.forEach(function (v, i) {
+      var x = padL + gap * i + (gap - barW) / 2, h = (H - padT - padB) * (v / max), y = H - padB - h;
+      svg += '<rect data-i="' + i + '" data-v="' + v + '" x="' + x + '" y="' + y + '" width="' + barW + '" height="' + Math.max(h, 1) + '" rx="3" fill="var(--accent)"/>';
+      svg += '<text class="axis-label" x="' + (x + barW / 2) + '" y="' + (H - padB + 14) + '" text-anchor="middle">' + MESES[i] + '</text>';
+    });
+    svg += '<line class="baseline" x1="' + padL + '" x2="' + (W - padR) + '" y1="' + (H - padB) + '" y2="' + (H - padB) + '" /></svg>';
+    var el = document.getElementById('chart-month');
+    el.innerHTML = svg;
+    var tip = document.getElementById('tooltip-root');
+    el.querySelectorAll('rect[data-i]').forEach(function (r) {
+      r.addEventListener('mousemove', function (e) {
+        var i = Number(r.getAttribute('data-i')), v = Number(r.getAttribute('data-v'));
+        tip.innerHTML = '<div class="tooltip" style="left:' + e.clientX + 'px; top:' + e.clientY + 'px;">' + MESES_LARGO[i] + ' · ' + fmtEUR(v) + '</div>';
+      });
+      r.addEventListener('mouseleave', function () { tip.innerHTML = ''; });
+    });
+  }
+
+  function renderStatusChart(yearOcs) {
+    var counts = { pendiente: 0, aceptado: 0, facturado: 0 };
+    yearOcs.forEach(function (o) { counts[o.estadoFacturacion] = (counts[o.estadoFacturacion] || 0) + 1; });
+    var total = counts.pendiente + counts.aceptado + counts.facturado;
+    var track = '<div class="status-track">';
+    Object.keys(BILLING).forEach(function (k) {
+      var pct = total ? (counts[k] / total * 100) : 0;
+      if (pct <= 0) return;
+      track += '<div class="status-seg" style="width:' + pct + '%; background:' + BILLING[k].color + '; color:var(--paper);">' + (pct > 10 ? counts[k] : '') + '</div>';
+    });
+    track += (!total ? '<div class="status-seg" style="width:100%; background:var(--border); color:var(--ink-mute);">Sin datos</div>' : '') + '</div>';
+    var legend = '<div class="status-legend">' + Object.keys(BILLING).map(function (k) { return '<span><span class="dot" style="background:' + BILLING[k].color + '"></span>' + BILLING[k].label + ' · ' + (counts[k] || 0) + '</span>'; }).join('') + '</div>';
+    document.getElementById('chart-status').innerHTML = track + legend;
+  }
+
+  /* ================= route render ================= */
+  function initYearSelects() {
+    populateYearSelect(document.getElementById('mx-year'), state.matrizYear);
+    populateYearSelect(document.getElementById('dash-year'), state.dashYear);
+  }
+  function renderRoute() {
+    if (!state.identity) return;
+    renderForm();
+    renderMatriz();
+    renderDashboard();
+  }
+
+  /* ================= boot ================= */
+  initAuth();
+})();
+
+</script>
+
+</body></html>

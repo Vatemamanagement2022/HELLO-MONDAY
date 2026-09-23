@@ -1,0 +1,53 @@
+rules_version = '2';
+
+// Solo cuentas de Google verificadas del dominio (o de las listas) pueden leer o escribir.
+// Mantén estas listas sincronizadas con public/config.js.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function email() {
+      return request.auth.token.email.lower();
+    }
+    function signedIn() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email_verified == true;
+    }
+    function isAdmin() {
+      return signedIn() && email() in [
+        // 'angel@helloomonday.com'
+      ];
+    }
+    function isViewer() {
+      return signedIn() && email() in [
+        // 'willy@ejemplo.com', 'terry@ejemplo.com'
+      ];
+    }
+    function isTeam() {
+      return signedIn() && (isAdmin() || email().matches('.*@helloomonday[.]com$'));
+    }
+    function canRead() {
+      return isTeam() || isViewer();
+    }
+    // Quien está en la lista de consulta es solo lectura, aunque su correo sea del dominio.
+    function canWrite() {
+      return isTeam() && !isViewer();
+    }
+
+    match /ocs/{ocId} {
+      allow read: if canRead();
+      allow create, update: if canWrite();
+      // Las OC no se borran: se cancelan (estadoOC = 'cancelada').
+      allow delete: if false;
+    }
+
+    match /objetivos/{year} {
+      allow read: if canRead();
+      allow write: if canWrite();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
