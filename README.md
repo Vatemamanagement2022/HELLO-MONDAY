@@ -1,20 +1,17 @@
 # HELLO-MONDAY · OC (herramienta interna)
 
-Órdenes de compra y rentabilidad del equipo, alojada en Firebase Hosting con login de Google
-(solo cuentas autorizadas) y datos en Firestore.
+Código de https://hello-monday-oc-temporal.web.app (Firebase Hosting, proyecto `hello-monday-oc-temporal`).
+Login con Google (lista `TEAM_EMAILS` en `public/index.html`) y datos en Firestore.
 
-## Por qué Google tiraba la web
-La pantalla de entrada mostraba el logo y pedía un PIN en un campo de contraseña en un dominio
-`*.web.app` público: Google Safe Browsing lo clasifica como posible phishing. Esta versión:
-- entra con **Google** (cuentas `@helloomonday.com` + listas de `public/config.js`), sin campos de contraseña;
-- no se indexa (`noindex` en la página y en cabeceras, `robots.txt` con `Disallow: /`);
-- protege los datos con `firestore.rules` (antes el PIN estaba en el código de la página).
+Las reglas de Firestore viven en la consola de Firebase: este repo solo despliega el hosting.
 
-## Puesta en marcha
-1. Firebase Console → **Authentication** → activar el proveedor **Google**.
-2. **Firestore Database** → crear base de datos (modo producción).
-3. Rellenar `public/config.js` (config del SDK web, `adminEmails`, `viewerEmails`, `teamEmails`)
-   y las mismas listas en `firestore.rules`. Poner el ID del proyecto en `.firebaserc`.
-4. `npm i -g firebase-tools && firebase login && firebase deploy`
-5. Si el dominio sigue marcado en rojo, solicitar revisión en Google Search Console
-   (Problemas de seguridad) o en https://safebrowsing.google.com/safebrowsing/report_error/.
+## Desplegar
+```
+npm i -g firebase-tools
+firebase login
+firebase deploy --only hosting
+```
+
+## Si Google la marca en rojo
+1. Search Console → añadir la propiedad → Seguridad → Solicitar revisión.
+2. Mejor solución: dominio propio (p. ej. `oc.helloomonday.com`) en Firebase Hosting → Dominio personalizado.
